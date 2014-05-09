@@ -1,0 +1,17 @@
+{
+  "name": "TheMarvel0fTechnology",
+  "version": "1.0.0",
+  "author": "HTML5 Team",
+  "main": "app",
+  "engines": {
+    "node": "0.10.28"
+  },
+  "scripts": {
+      "start": "app.js"
+  },
+  "dependencies": {
+      "express": "4.1.2",
+      "socket.io": "0.9.16",
+	  "ejs" : "1.0.0"
+  }
+}
