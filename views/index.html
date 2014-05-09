@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>The Marvel (vs Capcom) of Technology</title>
-		<script data-main="scripts/main" src="/libs/require.min.js"></script>
-	</head>
+  <head>
+    <title>The Marvel (vs Capcom) of Technology</title>
+    <script data-main="scripts/main" src="/libs/require.min.js"></script>
+    <style type="text/css">
+      body { background-color: #000; }
+      canvas#game { width: 1280px; height: 720px; }
+    </style>
+  </head>
 
-	<body>
-		<h1> WELCOME TO THE HOME PAGE :DDD </h1>
-	</body>
+  <body>
+    <canvas id="game" width="1280" height="720"></canvas>
+    <script>
+      var canvas = document.getElementById('game');
+      var context = canvas.getContext('2d');
+
+      context.font = 'italic 40pt Helvetica';
+      context.align = 'center';
+      context.fillStyle = "#FFF";
+      context.fillText('Marvel of Technology', 150, 100);
+    </script>
+  </body>
 
 </html> 
