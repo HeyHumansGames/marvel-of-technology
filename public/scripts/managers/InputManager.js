@@ -2,23 +2,8 @@ define( [  ], function(  )
 {
 	var InputManager = function()
 	{
-		this.KEY_O = false;
-		this.KEY_U = false;
-		this.KEY_Y = false;
-		this.KEY_A = false;
+		this.isPropulsorActive = false;
 		
-		this.KEY_L1 = false;
-		this.KEY_R1 = false;
-		this.KEY_L2 = false;
-		this.KEY_R2 = false;
-		
-		this.AXIS_LS_X = 0.0;
-		this.AXIS_LS_Y = 0.0;
-		this.AXIS_RS_X = 0.0;
-		this.AXIS_RS_Y = 0.0;
-		this.AXIS_L2   = 0.0;
-		this.AXIS_R2   = 0.0;
-	
 		var catchInput = function(e)
 		{
 			var code = e.keyCode;
@@ -44,23 +29,7 @@ define( [  ], function(  )
 	
 	InputManager.prototype.update = function( deltaTime )
 	{
-		if ( window.OCW )
-		{
-			this.KEY_O = window.OCW.getButton( "o" ); this.KEY_U = window.OCW.getButton( "u" ) == "true";
-			this.KEY_Y = window.OCW.getButton( "y" ) == "true"; this.KEY_A = window.OCW.getButton( "a" ) == "true";
-			
-			this.KEY_L1 = window.OCW.getButton( "l1" ) == "true"; this.KEY_L2 = window.OCW.getButton( "l2" ) == "true";
-			this.KEY_R1 = window.OCW.getButton( "r1" ) == "true"; this.KEY_R2 = window.OCW.getButton( "r2" ) == "true";
-			
-			this.AXIS_LS_X = parseFloat( window.OCW.getAxis( "lsx" ) ); 
-			this.AXIS_LS_Y = parseFloat( window.OCW.getAxis( "lsy" ) );
-			
-			this.AXIS_RS_X = parseFloat( window.OCW.getAxis( "rsx" ) );
-			this.AXIS_RS_Y = parseFloat( window.OCW.getAxis( "rsy" ) );
-			
-			this.AXIS_L2 = parseFloat( window.OCW.getAxis( "al2" ) );
-			this.AXIS_R2 = parseFloat( window.OCW.getAxis( "ar2" ) );
-		}
+		this.isPropulsorActive = this["32"];
 	}
 	
 	InputManager.prototype.render = function( context )
