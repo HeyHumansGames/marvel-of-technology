@@ -25,12 +25,12 @@ define( function()
 		
 		this.imageDirectories = [
 			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png" ] },
-			{ name : "", files : [ "captain.png" ] }
+			{ name : "", files : [ "captain.png", "ReacteurMoT.png", "ReacteurMoTActif.png", "VaisseauMoT.png" ] }
 		];
 
 		this.soundDirectories = [ 
 						{ name : "", files : ["ingame.mp3","editor.mp3"] }
-			];
+		];
 
 
 		this.parentImagesDirectories = [

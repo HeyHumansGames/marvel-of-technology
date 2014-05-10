@@ -1,4 +1,4 @@
-define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetManager, InputManager ) {
+define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Animation" ], function( AssetManager, InputManager, DialogManager, Animation ) {
 
   var MainLevel = function( context )
   {
@@ -9,6 +9,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetMan
     for (var i = 0; i < collision.length/120; i++) {
       this.collisionMap[i] = collision.slice(i*120, (i+1)*120);
     };
+
+    this.anim = new Animation("ReacteurMoTActif", 20, 32, 0.1, [0, 1, 2, 3]);
   };
   
   MainLevel.prototype.update = function( deltaTime )
@@ -28,6 +30,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetMan
     // Down
     if (InputManager.instance[40])
       game.screen.y += 100 * deltaTime;
+
+    this.anim.update();
 
     if (game.shaking) {
       s = 8 - 8 * Math.pow(-deltaTime / 4, 2);
@@ -63,6 +67,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetMan
         context.closePath();
       };
     };
+
+    this.anim.render(context, game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1));
   }
 
   MainLevel.prototype.map = function(number, istart, istop, ostart, ostop) {

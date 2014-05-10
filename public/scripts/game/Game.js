@@ -1,13 +1,16 @@
 define( [ 
-	"Box2D", 
-	"Managers/InputManager", 
-	"Managers/AssetManager", 
-	"Managers/DialogManager", 
-	"Menus/TitleMenu", 
-	"Menus/LoadingMenu", 
-	"Menus/MainLevel", 
-	"Menus/IntroductionScene", 
-	"libs/stats.min" ], function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene )
+		"Box2D", 
+		"Managers/InputManager", 
+		"Managers/AssetManager", 
+		"Managers/DialogManager", 
+		"Menus/TitleMenu", 
+		"Menus/LoadingMenu", 
+		"Menus/MainLevel", 
+		"Menus/IntroductionScene",
+		"game/Timer",
+		"libs/stats.min"
+	], 
+	function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene, Timer )
 {
 	var requestAnimationFrame = window.requestAnimationFrame
       || window.webkitRequestAnimationFrame
@@ -90,6 +93,7 @@ define( [
 	Game.prototype.gameLoop = function()
 	{		
 		stats.begin();
+		Timer.step();
 		
 		//right now we are in window scope not game, because AnimFrame! 
 		Game.instance.deltaTime = ( Date.now() - Game.instance.deltaTime ) * 0.001;

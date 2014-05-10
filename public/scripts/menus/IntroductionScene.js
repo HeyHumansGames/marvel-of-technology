@@ -1,4 +1,4 @@
-define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager" ], function( AssetManager, InputManager, DialogManager ) {
+define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Animation" ], function( AssetManager, InputManager, DialogManager, Animation ) {
 
   var IntroductionScene = function( context )
   {
