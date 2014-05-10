@@ -1,18 +1,24 @@
 require.config({
     paths: {
-        'socket_io'  : '/socket.io/socket.io',
+        "socket_io"  : "/socket.io/socket.io",
+		"libs"       : "/libs",
+		"Box2D"      : "box2D/B2D",
+		
+		"Managers"   : "managers",
+		"Game"       : "game",
+		"Menus"      : "menus"
     },
     shim: {
-        'socket_io': {
-            exports: 'io'
+        "socket_io" : {
+            exports : "io"
         }
     }
 });
 
 
-require( [ "socket_io" ], function ( io ) 
+require( [ "Game/Game" ], function ( Game ) 
 {
-	var hostAndPort = location.protocol + "//" + location.hostname + ":" + location.port;
+	var game = new Game( "game" );
 	
-	var clientSocket = io.connect( hostAndPort );
+	window.game = game;
 });
