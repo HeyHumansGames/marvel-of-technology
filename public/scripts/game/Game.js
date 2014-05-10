@@ -8,9 +8,10 @@ define( [
 		"Menus/MainLevel", 
 		"Menus/IntroductionScene",
 		"game/Timer",
+		"socket_io",
 		"libs/stats.min"
 	], 
-	function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene, Timer )
+	function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene, Timer, socket_io )
 {
 	var requestAnimationFrame = window.requestAnimationFrame
       || window.webkitRequestAnimationFrame
@@ -31,6 +32,9 @@ define( [
 	
 	var Game = function( canvasID )
 	{
+		//first create socket 
+		this.socket = io.connect( location.protocol + "//" + location.hostname + ":" + location.port );
+		
 		new Box2D();
 		new InputManager();
 		
@@ -44,7 +48,7 @@ define( [
 		this.menus.push( new LoadingMenu( this.context ) );
 		this.menus.push( new TitleMenu( this.context ) );
 		this.menus.push( new IntroductionScene( this.context ) );
-		this.menus.push( new MainLevel( this.context ) );
+		this.menus.push( new MainLevel( this.context, this.socket ) );
 		
 		this.isFinishedLoading = false; //trigger loading change just once D:
 		this.currentMenu = 0;
@@ -57,6 +61,9 @@ define( [
 		Game.instance = this;
 
 		this.loop( this.gameLoop );
+		
+		//emit socket connection 
+		this.initSocket();
 	}
 
 	Game.prototype.update = function( deltaTime )
@@ -104,6 +111,11 @@ define( [
 		Game.instance.deltaTime = Date.now();
 		
 		stats.end();
+	}
+	
+	Game.prototype.initSocket = function()
+	{
+		this.socket.emit( "gameConnect" );
 	}
 	
 	Game.prototype.constructor = Game;

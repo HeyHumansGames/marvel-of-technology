@@ -11,21 +11,55 @@ app.engine('html', require('ejs').renderFile); //make express render html files 
 
 require('./server/routes.js')(app);
 
+var players = new Array();
+var gameSocket;
+
 io.sockets.on('connection', function(socket) 
 {
 	console.log( "Someone connected to server, yay" );
 	
-	
-
-	socket.on('pushStartReactor', function (data) {
-    	console.log(data);
+	socket.on('pushStartReactor', function ( playerId ) {
+    //	console.log(data);
     	socket.emit('Allumage du reacteur du joueur X', { my: 'data' });
+		
+		if ( typeof( gameSocket ) !== "undefined" )
+			gameSocket.emit( "activatePropulsor", { id : playerId, activate : true } );
 	});
-	socket.on('unpushStartReactor', function (data) {
-    	console.log(data);
+	
+	socket.on('unpushStartReactor', function ( playerId ) {
+    //	console.log(data);
     	socket.emit("Fin d'allumage du reacteur du joueur X", { my: 'data' });
+		
+		if ( typeof( gameSocket ) !== "undefined" )
+			gameSocket.emit( "activatePropulsor", { id : playerId, activate : false } );
+	});
+	
+	socket.on("remoteConnect", function() {
+		var playerId = addPlayer();
+		
+		console.log( "remote connection" );
+		socket.emit( "connectedToServer", playerId );
+		
+		if ( typeof( gameSocket ) !== "undefined" )
+			gameSocket.emit( "addPropulsor", playerId );
+	});
+	
+	socket.on("gameConnect", function() {
+		gameSocket = socket;
+		for ( var i = 0; i < players.length; i++ )
+			gameSocket.emit( "addPropulsor", players[i] );
+		
+		console.log( "game connection" );
 	});
 });
+
+function addPlayer()
+{
+	var id = ( Math.random() * 9999999 ) | 0;
+	players.push( id );
+	
+	return id;
+}
 
 console.log( "SERVER ONLINE" );
 server.listen(8080);
