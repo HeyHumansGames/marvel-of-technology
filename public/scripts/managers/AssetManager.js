@@ -24,7 +24,8 @@ define( function()
 		this.isSkipImages  = false;
 		
 		this.imageDirectories = [
-			{ name : "decor/", files : [ "sol.png", "level1.png" ] }
+			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png" ] },
+			{ name : "", files : [ "captain.png" ] }
 		];
 
 		this.soundDirectories = [ 

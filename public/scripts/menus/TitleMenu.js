@@ -1,4 +1,4 @@
-define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetManager, InputManager ) {
+define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager" ], function( AssetManager, InputManager, DialogManager ) {
 
 	var TitleMenu = function( context )
 	{
@@ -7,9 +7,11 @@ define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetMan
 	
 	TitleMenu.prototype.update = function( deltaTime )
 	{
-	  // Enter
-    if (InputManager.instance[13])
+		// Enter
+    if (InputManager.instance[13]) {
       game.currentMenu += 1;
+      InputManager.instance[13] = false;
+    }
 	}
 	
 	TitleMenu.prototype.render = function( context )
@@ -17,15 +19,22 @@ define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetMan
 		context.fillStyle = "#000";
 		context.fillRect( 0, 0, this.size.width, this.size.height );
 		
-		context.font = 'italic 40pt Helvetica';
+    context.drawImage( AssetManager.instance.images[ "FondEtoiles720" ], 0, 0 );
+
+		context.font = 'italic 70pt "Architects Daughter"';
 		context.align = 'center';
-		context.fillStyle = "#FFF";
-		context.fillText('Marvel of Technology', 150, 100);
-		
-		context.drawImage( AssetManager.instance.images[ "sol" ], 150, 150 );
+    context.textAlign = 'center';
+    context.fillStyle = "#000"
+    context.fillText('Marvel of Technology', this.size.width >> 1, this.size.height >> 1);
+    context.fillStyle = "rgba(75, 137, 208, 0.4)"
+    context.fillText('Marvel of Technology', (this.size.width >> 1) + 7, (this.size.height >> 1) - 1);
+    context.fillStyle = "rgba(255, 84, 219, 0.5)"
+    context.fillText('Marvel of Technology', (this.size.width >> 1) - 7, (this.size.height >> 1) + 1);
+    context.fillStyle = "#FFF";
+		context.fillText('Marvel of Technology', this.size.width >> 1, this.size.height >> 1);
 	}
 	
 	TitleMenu.prototype.constructor = TitleMenu;
-	
+
 	return TitleMenu;
 });
