@@ -1,4 +1,4 @@
-define( [ "Managers/AssetManager", "Managers/InputManager", "Box2D", "Game/Ship" ], function( AssetManager, InputManager, Box2D, Ship ) {
+define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Animation", "Box2D", "Game/Ship" ], function( AssetManager, InputManager, DialogManager, Animation, Box2D, Ship ) {
 
   var box2DScale = 30;	
   var MainLevel = function( context )
@@ -10,6 +10,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Box2D", "Game/Ship"
     for (var i = 0; i < collision.length/120; i++) {
       this.collisionMap[i] = collision.slice(i*120, (i+1)*120);
     };
+
+    this.anim = new Animation("ReacteurMoTActif", 20, 32, 0.1, [0, 1, 2, 3]);
 	
 	this.initBox2DWorld( context );
 	
@@ -56,6 +58,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Box2D", "Game/Ship"
 	  this.step.y = 100 * deltaTime;
 	}
 	
+    this.anim.update();
+
     if (game.shaking) {
       s = 8 - 8 * Math.pow(-deltaTime / 4, 2);
       game.screen.x += this.map(Math.random(), 0, 1, -s, s);
@@ -96,6 +100,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Box2D", "Game/Ship"
         context.closePath();
       };
     };
+
+    this.anim.render(context, game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1));
 	
 //	if ( this.isMove )
 	{

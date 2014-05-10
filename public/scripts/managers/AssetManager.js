@@ -24,12 +24,13 @@ define( function()
 		this.isSkipImages  = false;
 		
 		this.imageDirectories = [
-			{ name : "decor/", files : [ "sol.png", "level1.png" ] }
+			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png" ] },
+			{ name : "", files : [ "captain.png", "ReacteurMoT.png", "ReacteurMoTActif.png", "VaisseauMoT.png" ] }
 		];
 
 		this.soundDirectories = [ 
 						{ name : "", files : ["ingame.mp3","editor.mp3"] }
-			];
+		];
 
 
 		this.parentImagesDirectories = [

@@ -1,4 +1,16 @@
-define( [ "Box2D", "Managers/InputManager", "Managers/AssetManager", "Menus/TitleMenu", "Menus/LoadingMenu", "Menus/MainLevel", "libs/stats.min" ], function( Box2D, InputManager, AssetManager, TitleMenu, LoadingMenu, MainLevel )
+define( [ 
+		"Box2D", 
+		"Managers/InputManager", 
+		"Managers/AssetManager", 
+		"Managers/DialogManager", 
+		"Menus/TitleMenu", 
+		"Menus/LoadingMenu", 
+		"Menus/MainLevel", 
+		"Menus/IntroductionScene",
+		"game/Timer",
+		"libs/stats.min"
+	], 
+	function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene, Timer )
 {
 	var requestAnimationFrame = window.requestAnimationFrame
       || window.webkitRequestAnimationFrame
@@ -31,6 +43,7 @@ define( [ "Box2D", "Managers/InputManager", "Managers/AssetManager", "Menus/Titl
 		this.menus = new Array();
 		this.menus.push( new LoadingMenu( this.context ) );
 		this.menus.push( new TitleMenu( this.context ) );
+		this.menus.push( new IntroductionScene( this.context ) );
 		this.menus.push( new MainLevel( this.context ) );
 		
 		this.isFinishedLoading = false; //trigger loading change just once D:
@@ -80,6 +93,7 @@ define( [ "Box2D", "Managers/InputManager", "Managers/AssetManager", "Menus/Titl
 	Game.prototype.gameLoop = function()
 	{		
 		stats.begin();
+		Timer.step();
 		
 		//right now we are in window scope not game, because AnimFrame! 
 		Game.instance.deltaTime = ( Date.now() - Game.instance.deltaTime ) * 0.001;
