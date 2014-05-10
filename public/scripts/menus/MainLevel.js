@@ -1,11 +1,6 @@
-define( [ 
-  "Managers/AssetManager", 
-  "Managers/InputManager", 
-  "Managers/DialogManager", 
-  "Game/Animation",
-  "Game/Particles"
-], function( AssetManager, InputManager, DialogManager, Animation, ParticleEmitter ) {
+define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Animation", "Game/Particles", "Box2D", "Game/Ship" ], function( AssetManager, InputManager, DialogManager, Animation, ParticleEmitter, Box2D, Ship ) {
 
+  var box2DScale = 30;	
   var MainLevel = function( context )
   {
     this.size = { x : context.canvas.width, y : context.canvas.height };
@@ -18,29 +13,52 @@ define( [
 
     this.anim = new Animation("ReacteurMoTActif", 20, 32, 0.1, [0, 1, 2, 3]);
     this.particles = [];
+	
+  	this.initBox2DWorld( context );
+  	
+  	this.ship = new Ship( this.world, { x : ( 0 ) / box2DScale * 0.5, y : ( 0 ) / box2DScale * 0.5 } );
+  	
+  	//listen when game screen has changed such that collision boxes are not constantly moved D:
+  	this.isMove = false;
+  	this.step = { x : 0, y : 0 };
+
   };
   
   MainLevel.prototype.update = function( deltaTime )
   {
+	this.step = {x:0,y:0};
+	
     // Left
     if (InputManager.instance[37])
+	  {
       game.screen.x -= 100 * deltaTime;
+    }
 
     // Right
     if (InputManager.instance[39]) {
       game.screen.x += 100 * deltaTime;
+      this.isMove = true;
+      this.step.x = 100 * deltaTime;
       this.particles.push(new ParticleEmitter(game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1)));
       InputManager.instance[39] = false
     }
-
-    // Up
+      
+	  // Up
     if (InputManager.instance[38])
-      game.screen.y -= 100 * deltaTime;
-
+  	{
+        game.screen.y -= 100 * deltaTime;
+  	  this.isMove = true;
+  	  this.step.y = -100 * deltaTime;
+  	}
+	
     // Down
     if (InputManager.instance[40])
+	{
       game.screen.y += 100 * deltaTime;
-
+	  this.isMove = true;
+	  this.step.y = 100 * deltaTime;
+	}
+	
     this.anim.update();
 
     if (game.shaking) {
@@ -57,6 +75,11 @@ define( [
           this.particles[i].update(deltaTime);
       };
     }
+	
+  	this.ship.update( deltaTime );
+  	
+  	this.world.Step(1 / 60, 10, 10);
+  	this.world.ClearForces();
   }
   
   MainLevel.prototype.render = function( context )
@@ -64,12 +87,13 @@ define( [
     context.fillStyle = "#000";
     context.fillRect( 0, 0, this.size.x, this.size.y );
 
-    context.drawImage( AssetManager.instance.images[ "level1" ], game.screen.x, game.screen.y, this.size.x, this.size.y, 0, 0, this.size.x, this.size.y);
+	var shipPos = this.ship.body.GetPosition();
+    context.drawImage( AssetManager.instance.images[ "level1" ], shipPos.x, shipPos.y, this.size.x, this.size.y, 0, 0, this.size.x, this.size.y);
 
-    decX = game.screen.x >> 5;
-    decXMax = (game.screen.x + this.size.x) >> 5;
+    decX = shipPos.x >> 5;
+    decXMax = (shipPos.x + this.size.x) >> 5;
     decY = game.screen.y >> 5;
-    decYMax = (game.screen.y + this.size.y) >> 5;
+    decYMax = (shipPos.y + this.size.y) >> 5;
     
     for (var i = 0; i < this.collisionMap.length; i++) {
       if (i < decY) continue;
@@ -80,7 +104,7 @@ define( [
         if (j > decXMax) break;
 
         context.beginPath();
-        context.rect((j << 5) - game.screen.x, (i << 5) - game.screen.y, 32, 32);
+        context.rect((j << 5) - shipPos.x, (i << 5) - shipPos.y, 32, 32);
         context.fillStyle = "rgba(255, 0, 0, 0.5)";
         context.fill();
         context.closePath();
@@ -93,11 +117,89 @@ define( [
         this.particles[i].render(context);
       };
     }
+	
+//	if ( this.isMove )
+	{
+		for ( var i = 0; i < this.collisionBodies.length; i++ )
+		{
+			var collisionBody = this.collisionBodies[i];
+			collisionBody.body.GetPosition().Set( collisionBody.pos.x - ( shipPos.x / box2DScale ), collisionBody.pos.y - ( shipPos.y / box2DScale ) ); 
+		}
+		
+	//	this.isMove = false;
+	}
+	
+	game.showDebug = true;
+	if ( game.showDebug ) 
+		this.world.DrawDebugData();
   }
-
+ 
   MainLevel.prototype.map = function(number, istart, istop, ostart, ostop) {
     return ostart + (ostop - ostart) * ((number - istart) / (istop - istart));
   };
+  
+  MainLevel.prototype.initBox2DWorld = function( context )
+  {
+	var gravity = new Box2D.Vec2( 0, 10 ); 
+	this.world  = new Box2D.World( gravity, true);
+	
+	this.setupDebugDraw( context );
+	this.convertCollisionData();
+  }
+  
+  MainLevel.prototype.setupDebugDraw = function( context )
+  {
+	var debugDraw = new Box2D.DebugDraw();
+	
+	debugDraw.SetSprite( context );
+	debugDraw.SetDrawScale( box2DScale );
+	debugDraw.SetFillAlpha(0.3);
+	debugDraw.SetLineThickness(1.0);
+	debugDraw.SetFlags( Box2D.DebugDraw.e_shapeBit | Box2D.DebugDraw.e_jointBit );
+		
+	this.world.SetDebugDraw( debugDraw );
+  }
+  
+  MainLevel.prototype.convertCollisionData = function()
+  {
+	var boxSize = 16 / box2DScale;
+	
+	var fixDef  = new Box2D.FixtureDef();
+	var bodyDef = new Box2D.BodyDef();
+	
+	fixDef.density = 1.0;
+	fixDef.friction = 0.5;
+	fixDef.restitution = 0.0;
+	
+	//everything will be a static body with box size (so we can define this just once)
+	bodyDef.type = Box2D.Body.b2_staticBody;
+	fixDef.shape = new Box2D.PolygonShape();
+	fixDef.shape.SetAsBox( boxSize, boxSize );
+	
+	this.collisionBodies = new Array();
+	for ( var i = 0; i < this.collisionMap.length; i++ )
+		for ( var j = 0; j < this.collisionMap[i].length; j++ )
+		{
+			var collision = this.collisionMap[i][j];
+			if ( collision === 0 )
+				continue;
+			
+		//	center of collision box
+			bodyDef.position.Set( (2*j + 1) * boxSize, (2*i + 1) * boxSize );
+			
+			var collisionBody = this.world.CreateBody( bodyDef );
+			collisionBody.CreateFixture( fixDef );
+			
+			var pos = collisionBody.GetPosition();
+			this.collisionBodies.push( { pos : new Box2D.Vec2( pos.x, pos.y ), body : collisionBody } );
+		}
+		
+	// for ( var i = 0; i < 2; i++ )
+	// {
+		// bodyDef.position.Set( (2*i + 1) * boxSize, boxSize );	
+		// this.world.CreateBody( bodyDef ).CreateFixture( fixDef );
+	// }
+  }
   
   MainLevel.prototype.constructor = MainLevel;
   

@@ -14,6 +14,15 @@ require('./server/routes.js')(app);
 io.sockets.on('connection', function(socket) 
 {
 	console.log( "Someone connected to server, yay" );
+	
+	socket.on('pushStartReactor', function (data) {
+    	console.log(data);
+    	socket.emit('Allumage du reacteur du joueur X', { my: 'data' });
+	});
+	socket.on('unpushStartReactor', function (data) {
+    	console.log(data);
+    	socket.emit("Fin d'allumage du reacteur du joueur X", { my: 'data' });
+	});
 });
 
 console.log( "SERVER ONLINE" );
