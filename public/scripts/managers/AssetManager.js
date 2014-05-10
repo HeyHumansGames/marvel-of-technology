@@ -25,7 +25,7 @@ define( function()
 		
 		this.imageDirectories = [
 			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png" ] },
-			{ name : "", files : [ "captain.png" ] }, 
+			{ name : "", files : [ "space-monkey.png" ] }, 
 			{ name : "ship/", files : [ "ReacteurMoT.png", "ReacteurMoTActif.png", "VaisseauMoT.png" ] }
 		];
 

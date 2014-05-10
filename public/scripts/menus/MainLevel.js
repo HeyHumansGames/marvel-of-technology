@@ -1,4 +1,4 @@
-define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Animation", "Box2D", "Game/Ship" ], function( AssetManager, InputManager, DialogManager, Animation, Box2D, Ship ) {
+define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Animation", "Game/Particles", "Box2D", "Game/Ship" ], function( AssetManager, InputManager, DialogManager, Animation, ParticleEmitter, Box2D, Ship ) {
 
   var box2DScale = 30;	
   var MainLevel = function( context, socket )
@@ -12,14 +12,16 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     };
 
     this.anim = new Animation("ReacteurMoTActif", 20, 32, 0.1, [0, 1, 2, 3]);
+    this.particles = [];
 	
-	this.initBox2DWorld( context );
-	
-	this.ship = new Ship( this.world, { x : ( 0 ) / box2DScale * 0.5, y : ( 0 ) / box2DScale * 0.5 }, socket );
-	
-	//listen when game screen has changed such that collision boxes are not constantly moved D:
-	this.isMove = false;
-	this.step = { x : 0, y : 0 };
+  	this.initBox2DWorld( context );
+  	
+  	this.ship = new Ship( this.world, { x : ( 0 ) / box2DScale * 0.5, y : ( 0 ) / box2DScale * 0.5 }, socket );
+  	
+  	//listen when game screen has changed such that collision boxes are not constantly moved D:
+  	this.isMove = false;
+  	this.step = { x : 0, y : 0 };
+
   };
   
   MainLevel.prototype.update = function( deltaTime )
@@ -28,27 +30,26 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 	
     // Left
     if (InputManager.instance[37])
-	{
+	  {
       game.screen.x -= 100 * deltaTime;
-	  this.isMove = true;
-	  this.step.x = -100 * deltaTime;
-	}
-    
-	// Right
-    if (InputManager.instance[39])
-    {
-		game.screen.x += 100 * deltaTime;
-		this.isMove = true;
-		this.step.x = 100 * deltaTime;
-	}
-    
-	// Up
+    }
+
+    // Right
+    if (InputManager.instance[39]) {
+      game.screen.x += 100 * deltaTime;
+      this.isMove = true;
+      this.step.x = 100 * deltaTime;
+      this.particles.push(new ParticleEmitter(game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1)));
+      InputManager.instance[39] = false
+    }
+      
+	  // Up
     if (InputManager.instance[38])
-	{
-      game.screen.y -= 100 * deltaTime;
-	  this.isMove = true;
-	  this.step.y = -100 * deltaTime;
-	}
+  	{
+        game.screen.y -= 100 * deltaTime;
+  	  this.isMove = true;
+  	  this.step.y = -100 * deltaTime;
+  	}
 	
     // Down
     if (InputManager.instance[40])
@@ -65,11 +66,20 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
       game.screen.x += this.map(Math.random(), 0, 1, -s, s);
       game.screen.y += this.map(Math.random(), 0, 1, -s, s);
     }
+
+    if (this.particles.length > 0) {
+      for (var i = this.particles.length - 1; i >= 0; i--) {
+        if (this.particles[i]._killed)
+          this.particles.splice(i, 1);
+        else
+          this.particles[i].update(deltaTime);
+      };
+    }
 	
-	this.ship.update( deltaTime );
-	
-	this.world.Step(1 / 60, 10, 10);
-	this.world.ClearForces();
+  	this.ship.update( deltaTime );
+  	
+  	this.world.Step(1 / 60, 10, 10);
+  	this.world.ClearForces();
   }
   
   MainLevel.prototype.render = function( context )
@@ -102,6 +112,11 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     };
 
     this.anim.render(context, game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1));
+    if (this.particles.length > 0) {
+      for (var i = this.particles.length - 1; i >= 0; i--) {
+        this.particles[i].render(context);
+      };
+    }
 	
 //	if ( this.isMove )
 	{
