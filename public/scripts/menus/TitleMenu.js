@@ -1,4 +1,4 @@
-define( [ "Managers/AssetManager" ], function( AssetManager ) {
+define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetManager, InputManager ) {
 
 	var TitleMenu = function( context )
 	{
@@ -7,7 +7,9 @@ define( [ "Managers/AssetManager" ], function( AssetManager ) {
 	
 	TitleMenu.prototype.update = function( deltaTime )
 	{
-	
+	  // Enter
+    if (InputManager.instance[13])
+      game.currentMenu += 1;
 	}
 	
 	TitleMenu.prototype.render = function( context )
