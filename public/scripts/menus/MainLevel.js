@@ -1,4 +1,10 @@
-define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Animation" ], function( AssetManager, InputManager, DialogManager, Animation ) {
+define( [ 
+  "Managers/AssetManager", 
+  "Managers/InputManager", 
+  "Managers/DialogManager", 
+  "Game/Animation",
+  "Game/Particles"
+], function( AssetManager, InputManager, DialogManager, Animation, ParticleEmitter ) {
 
   var MainLevel = function( context )
   {
@@ -11,6 +17,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     };
 
     this.anim = new Animation("ReacteurMoTActif", 20, 32, 0.1, [0, 1, 2, 3]);
+    this.particles = [];
   };
   
   MainLevel.prototype.update = function( deltaTime )
@@ -20,8 +27,11 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
       game.screen.x -= 100 * deltaTime;
 
     // Right
-    if (InputManager.instance[39])
+    if (InputManager.instance[39]) {
       game.screen.x += 100 * deltaTime;
+      this.particles.push(new ParticleEmitter(game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1)));
+      InputManager.instance[39] = false
+    }
 
     // Up
     if (InputManager.instance[38])
@@ -37,6 +47,15 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
       s = 8 - 8 * Math.pow(-deltaTime / 4, 2);
       game.screen.x += this.map(Math.random(), 0, 1, -s, s);
       game.screen.y += this.map(Math.random(), 0, 1, -s, s);
+    }
+
+    if (this.particles.length > 0) {
+      for (var i = this.particles.length - 1; i >= 0; i--) {
+        if (this.particles[i]._killed)
+          this.particles.splice(i, 1);
+        else
+          this.particles[i].update(deltaTime);
+      };
     }
   }
   
@@ -69,6 +88,11 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     };
 
     this.anim.render(context, game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1));
+    if (this.particles.length > 0) {
+      for (var i = this.particles.length - 1; i >= 0; i--) {
+        this.particles[i].render(context);
+      };
+    }
   }
 
   MainLevel.prototype.map = function(number, istart, istop, ostart, ostop) {

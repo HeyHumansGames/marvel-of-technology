@@ -4,8 +4,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
   {
     this.size = { width : context.canvas.width, height : context.canvas.height };
     this.dialogs = new DialogManager();
-    this.dialogs.add('captain', 'This is... hum... captain speaking. Welcome, PNC aux portes, on board. Terminé.');
-    this.dialogs.add('captain', 'We are currently crashing onto an unkown planet. Thank you for flying us. Terminé.');
+    this.dialogs.add('space-monkey', 'This is... hum... captain speaking. Welcome, PNC aux portes, on board. Terminé.');
+    this.dialogs.add('space-monkey', 'We are currently crashing onto an unkown planet. Thank you for flying us. Terminé.');
     this.dialogs.display();
   };
   

@@ -36,6 +36,9 @@ define( [
 		
 		var path = {img:"assets/img/", sound:"assets/sounds/"};
 		new AssetManager(path);
+
+		// Pools, mainly for particles
+		this.pools = {};
 	
 		this.canvas  = document.getElementById( canvasID );
 		this.context = this.canvas.getContext( "2d" );
@@ -88,7 +91,7 @@ define( [
 		};
 		
         _cb();
-    };
+   };
 	
 	Game.prototype.gameLoop = function()
 	{		
@@ -104,7 +107,25 @@ define( [
 		Game.instance.deltaTime = Date.now();
 		
 		stats.end();
-	}
+	};
+
+	Game.prototype.getFromPool = function( classId, x, y, settings ) {
+		var pool = this.pools[classId];
+		if( !pool || !pool.length ) { return null; }
+		
+		var instance = pool.pop();
+		instance.reset(x, y, settings);
+		return instance;
+	};
+
+	Game.prototype.putInPool = function( instance ) {
+		if( !this.pools[instance.classId] ) {
+			this.pools[instance.classId] = [instance];
+		}
+		else {
+			this.pools[instance.classId].push(instance);
+		}
+	};
 	
 	Game.prototype.constructor = Game;
 		
