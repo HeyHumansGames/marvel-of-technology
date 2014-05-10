@@ -24,9 +24,9 @@ define( function()
 		this.isSkipImages  = false;
 		
 		this.imageDirectories = [
-			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png" ] },
+			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png", "MoT_Trials.png" ] },
 			{ name : "", files : [ "space-monkey.png" ] }, 
-			{ name : "ship/", files : [ "ReacteurMoT.png", "ReacteurMoTActif.png", "VaisseauMoT.png" ] }
+			{ name : "ship/", files : [ "ReacteurMoT.png", "ReacteurMoTActif.png", "VaisseauMoTShaded.png" ] }
 		];
 
 		this.soundDirectories = [ 
