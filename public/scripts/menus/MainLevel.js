@@ -28,6 +28,12 @@ define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetMan
     // Down
     if (InputManager.instance[40])
       game.screen.y += 100 * deltaTime;
+
+    if (game.shaking) {
+      s = 8 - 8 * Math.pow(-deltaTime / 4, 2);
+      game.screen.x += this.map(Math.random(), 0, 1, -s, s);
+      game.screen.y += this.map(Math.random(), 0, 1, -s, s);
+    }
   }
   
   MainLevel.prototype.render = function( context )
@@ -58,6 +64,10 @@ define( [ "Managers/AssetManager", "Managers/InputManager" ], function( AssetMan
       };
     };
   }
+
+  MainLevel.prototype.map = function(number, istart, istop, ostart, ostop) {
+    return ostart + (ostop - ostart) * ((number - istart) / (istop - istart));
+  };
   
   MainLevel.prototype.constructor = MainLevel;
   
