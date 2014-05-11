@@ -27,7 +27,7 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 		
 		var fixDef   = new Box2D.FixtureDef();
 		fixDef.shape = new Box2D.PolygonShape();
-		
+	
 		this.defineShape( fixDef );
 		
 		this.body = world.CreateBody( bodyDef );
