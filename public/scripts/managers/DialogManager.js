@@ -37,9 +37,9 @@ define( [ "Managers/AssetManager" ], function( AssetManager ) {
       context.closePath()
 
       context.fillStyle = "#FFF";
-      context.font = '24pt "Architects Daughter"';
+      context.font = '48pt "Architects Daughter"';
       context.textAlign = "left";
-      this.wrapText(context, cD.text, x + 32, y + 32, width - 64, 40);
+      this.wrapText(context, cD.text, x + 64, y + 96, width - 128, 64);
     }
 
   };
