@@ -19,7 +19,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
   	this.initBox2DWorld( context );
   	
 
-  	this.ship = new Ship( this.world, { x : ( 80 ) / box2DScale, y : ( 1100 ) / box2DScale }, socket );
+  	this.ship = new Ship( this.world, { x : ( 80 ) / box2DScale, y : ( 1300 ) / box2DScale }, socket );
   	this.ship.modules[0].body.parent = this;
 
     //add contact listener
@@ -30,7 +30,19 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
   	//listen when game screen has changed such that collision boxes are not constantly moved D:
   	this.isMove = false;
   	this.step = { x : 0, y : 0 };
-
+	
+	this.offset = {x : this.size.x * 0.5, y : this.size.y * 0.5 };
+	
+	var fixDef = new Box2D.FixtureDef();
+		fixDef.density = .5;
+		fixDef.friction = 0.4;
+		fixDef.restitution = 0.2;
+		var bodyDef = new Box2D.BodyDef();
+		bodyDef.type = Box2D.Body.b2_staticBody;
+		fixDef.shape =  new Box2D.PolygonShape();
+		fixDef.shape.SetAsBox(40 / Box2D.scale, 1280/2 / Box2D.scale);
+		bodyDef.position.Set( 800 / Box2D.scale, 720 / 2 / Box2D.scale );
+		this.world.CreateBody(bodyDef).CreateFixture(fixDef);
   };
   
   MainLevel.prototype.update = function( deltaTime )
@@ -89,12 +101,12 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 
     var pS = this.ship.modules[0].body.GetPosition();
 
-    game.screen.x = (pS.x * 30) - (this.size.x >> 1);
-    game.screen.y = (pS.y * 30) - (this.size.y >> 1);
-    if (game.screen.x < 0) game.screen.x = 0;
-    if (game.screen.x > 5120) game.screen.x = 5120;
-    if (game.screen.y < 0) game.screen.y = 0;
-    if (game.screen.y > 2480) game.screen.y = 2480;
+    // game.screen.x = (pS.x * 30) - (this.size.x >> 1);
+    // game.screen.y = (pS.y * 30) - (this.size.y >> 1);
+    // if (game.screen.x < 0) game.screen.x = 0;
+    // if (game.screen.x > 5120) game.screen.x = 5120;
+    // if (game.screen.y < 0) game.screen.y = 0;
+    // if (game.screen.y > 2480) game.screen.y = 2480;
   	
   	this.world.Step(1 / 60, 10, 10);
 
@@ -107,7 +119,25 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     context.fillRect( 0, 0, this.size.x, this.size.y );
 
     var shipPos = this.ship.modules[0].body.GetPosition();
-    context.drawImage( AssetManager.instance.images[ "MoT_Trials" ], game.screen.x, game.screen.y, this.size.x, this.size.y, 0, 0, this.size.x, this.size.y);
+	context.save();
+	
+		context.translate( this.offset.x + -shipPos.x * Box2D.scale, this.offset.y + -shipPos.y * Box2D.scale );
+	
+		game.showDebug = true;
+		if ( game.showDebug ) 
+			this.world.DrawDebugData();
+			
+		if (this.particles.length > 0) {
+		  for (var i = this.particles.length - 1; i >= 0; i--) {
+			this.particles[i].render(context);
+		  };
+		}
+	
+		this.ship.render( context, this.offset );
+		
+		context.restore();
+	
+    //context.drawImage( AssetManager.instance.images[ "MoT_Trials" ], game.screen.x, game.screen.y, this.size.x, this.size.y, 0, 0, this.size.x, this.size.y);
 
     // decX = shipPos.x >> 5;
     // decXMax = (shipPos.x + this.size.x) >> 5;
@@ -131,30 +161,21 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     // };
 
     // this.anim.render(context, game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1));
-    context.drawImage( AssetManager.instance.images[ "VaisseauMoTShaded" ], (shipPos.x * 30) - game.screen.x, (shipPos.y * 30) - game.screen.y);
+    //context.drawImage( AssetManager.instance.images[ "VaisseauMoTShaded" ], (shipPos.x * 30) - game.screen.x, (shipPos.y * 30) - game.screen.y);
 
-    if (this.particles.length > 0) {
-      for (var i = this.particles.length - 1; i >= 0; i--) {
-        this.particles[i].render(context);
-      };
-    }
 	
 //	if ( this.isMove )
 	{
-		for ( var i = 0; i < this.collisionBodies.length; i++ )
+	//	for ( var i = 0; i < this.collisionBodies.length; i++ )
 		{
-			var collisionBody = this.collisionBodies[i];
-			collisionBody.body.GetPosition().Set( collisionBody.pos.x - ( game.screen.x / box2DScale ), collisionBody.pos.y - ( game.screen.y / box2DScale ) ); 
+	//		var collisionBody = this.collisionBodies[i];
+	//		collisionBody.body.GetPosition().Set( collisionBody.pos.x - ( game.screen.x / box2DScale ), collisionBody.pos.y - ( game.screen.y / box2DScale ) ); 
 		}
 		
 	//	this.isMove = false;
 	}
 	
-	this.ship.render( context );
 	
-	game.showDebug = false;
-	if ( game.showDebug ) 
-		this.world.DrawDebugData();
   }
  
   MainLevel.prototype.map = function(number, istart, istop, ostart, ostop) {
@@ -202,7 +223,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 
   MainLevel.prototype.initBox2DWorld = function( context )
   {
-	var gravity = new Box2D.Vec2( 0, 0 ); 
+	var gravity = new Box2D.Vec2( 0, 2 ); 
 	this.world  = new Box2D.World( gravity, true);
 	
 	this.setupDebugDraw( context );

@@ -1,6 +1,6 @@
-define( [ "Box2D", "Managers/InputManager", "Game/Module", "Game/Particles" ], function( Box2D, InputsManager, Module, ParticleEmitter )
+define( [ "Box2D", "Managers/InputManager", "Game/Module", "Game/Particles", "Managers/AssetManager" ], function( Box2D, InputsManager, Module, ParticleEmitter, AssetManager )
 {
-	var propulsorForce = 10;
+	var propulsorForce = 20;
 	var Ship = function( world, position, socket ) 
 	{
 		// //add contact listener
@@ -12,7 +12,7 @@ define( [ "Box2D", "Managers/InputManager", "Game/Module", "Game/Particles" ], f
 		// this.createShipBody( world, position );
 		// this.addPropulsors( world, position, socket );
 
-    this.particles = [];
+		this.particles = [];
 		this.modules = new Array();
 		
 		this.addModule( world, position );
@@ -67,6 +67,16 @@ define( [ "Box2D", "Managers/InputManager", "Game/Module", "Game/Particles" ], f
 		
 		// var position = this.body.GetPosition();
 		// context.save();	
+		
+		var pos = this.modules[0].body.GetPosition();	
+		context.save();
+		
+			context.translate( pos.x * Box2D.scale, pos.y * Box2D.scale );
+			
+			var shipImage = AssetManager.instance.images[ "VaisseauMoTShaded" ];
+			context.drawImage( shipImage, -0.25 * shipImage.width, -0.25 * shipImage.height );
+			
+		context.restore();
 	}
 		
 	Ship.prototype.initSocket = function( world, socket )
