@@ -26,7 +26,7 @@ define( function()
 		this.imageDirectories = [
 			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png", "MoT_Trials.png" ] },
 			{ name : "", files : [ "space-monkey.png" ] }, 
-			{ name : "ship/", files : [ "ReacteurMoT.png", "ReacteurMoTActif.png", "VaisseauMoTShaded.png" ] }
+			{ name : "ship/", files : [ "ReacteurMoT.png", "VaisseauMoTShaded.png" ] }
 		];
 
 		this.soundDirectories = [ 

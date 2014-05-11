@@ -1,4 +1,4 @@
-define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D, InputsManager, Propulsor )
+define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "Game/Particles" ], function( Box2D, InputsManager, Propulsor, ParticleEmitter )
 {
 	var box2DScale = 30;
 	var Ship = function( world, position, socket ) 
@@ -11,6 +11,8 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 		
 		this.createShipBody( world, position );
 		this.addPropulsors( world, position, socket );
+
+    this.particles = [];
 	}
 	
 	Ship.prototype.update = function( deltaTime )
@@ -180,6 +182,18 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 		
 		if ( bodies[0].tag === bodies[1].tag )
 			return;
+
+		// var dust = false;
+		// if ( bodies[0].tag === "dust") {
+		// 	dust = bodies[0];
+		// } else if ( bodies[1].tag === "dust") {
+		// 	dust = bodies[1];
+		// }
+		// if (dust) {
+		// 	var p = dust.GetPosition();
+		// 	if (this.particles.length < 5)
+		// 		this.particles.push(new ParticleEmitter(p.x * 30 - game.screen.x, p.y * 30 - game.screen.y));
+		// }
 		
 		var module = bodies[shipIndex].module;
 		if(bodies[1 - shipIndex] === null || bodies[1 - shipIndex] === undefined)
