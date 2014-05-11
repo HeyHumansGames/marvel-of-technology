@@ -97,9 +97,41 @@ require (["socket_io","Managers/InputManager", "HandJS" ],function(io, InputMana
     var posY2 = 20;
     img2.onload = function() {
 		ctx.drawImage(img2, tailleW, tailleH, c.width-(2*tailleW), c.height-(2*tailleH));
-		LoadButtons(img);
+		
+		// Petit effet de courants électrique (inutile mais WOW effect!!! so juicy much fancy)
+		    ctx.beginPath();
+		    ctx.moveTo(125,20);
+		    ctx.lineTo(125,150);
+		    ctx.moveTo(125,150);
+		    ctx.lineTo(530,150);
+		    ctx.moveTo(530,150);
+		    ctx.lineTo(530,290);
+		    ctx.moveTo(525,290);
+		    ctx.lineTo(c.width-20,290);
+		    ctx.closePath();
+		    ctx.strokeStyle="#00fff0";
+		    ctx.stroke();
+
+		    ctx.beginPath();
+		    ctx.moveTo(200,c.height-20);
+		    ctx.lineTo(200,c.height-300);
+		    ctx.moveTo(200,c.height-300);
+		    ctx.lineTo(525,c.height-300);
+		    ctx.moveTo(525,c.height-300);
+		    ctx.lineTo(650,c.height-200);
+		    ctx.moveTo(650,c.height-200);
+		    ctx.lineTo(890,c.height-200);
+		    ctx.moveTo(890,c.height-200);
+		    ctx.lineTo(890,20);
+		    ctx.closePath();
+		    ctx.strokeStyle="#ffcf00";
+		    ctx.stroke();
+
+		LoadButtons(img);	
 	}
     img2.src = '/assets/img/interface/fond.png';
+
+
 
     //Informations du joueur
     var idplayer = 0;
