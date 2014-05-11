@@ -169,8 +169,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 	var fixDef  = new Box2D.FixtureDef();
 	var bodyDef = new Box2D.BodyDef();
 	
-	fixDef.density = 1.0;
-	fixDef.friction = 0.5;
+	fixDef.density = 10;
+	fixDef.friction = 0;
 	fixDef.restitution = 0.0;
 	
 	//everything will be a static body with box size (so we can define this just once)

@@ -12,6 +12,8 @@ require.config({
     }
 });
 
+ //Informations du joueur
+var idplayer = 0;
 require (["socket_io","Managers/InputManager", "HandJS" ],function(io, InputManager){
 
 	var c = document.getElementById("interface");
@@ -101,25 +103,28 @@ require (["socket_io","Managers/InputManager", "HandJS" ],function(io, InputMana
 	}
     img2.src = '/assets/img/interface/fond.png';
 
-    //Informations du joueur
-    var idplayer = 0;
 
     //Gérer les inputs
     var hostAndPort = location.protocol + "//" + location.hostname + ":" + location.port;
     var clientSocket = io.connect(hostAndPort);
 
+	clientSocket.emit( "remoteConnect" );
+	clientSocket.on( "connectedToServer", function( playerId ) {
+		idplayer = playerId;
+	});
+	
     document.body.addEventListener("pointerdown", function(e){
     	e.preventDefault();
     	InputManager.instance["touch"] = true;
     	img.src = '/assets/img/interface/boutonunhold.png';
-    	clientSocket.emit("pushStartReactor", {message : 'Joueur '+ idplayer +': Réacteur Activé Capitaine!'});
+    	clientSocket.emit("pushStartReactor", idplayer );
     }, false);
 
     document.body.addEventListener("pointerup", function(e){
     	e.preventDefault();
     	InputManager.instance["touch"] = false;
 		img.src = '/assets/img/interface/boutonhold.png';
-    	clientSocket.emit("unpushStartReactor", {message : 'Joueur '+ idplayer +': Réacteur Désactivé Capitaine!'});
+    	clientSocket.emit("unpushStartReactor", idplayer );
     }, false);
 
     function LoadButtons(img){

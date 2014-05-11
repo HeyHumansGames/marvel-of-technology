@@ -47,7 +47,7 @@ define( [ "Box2D", "Managers/InputManager", "libs/Vectors" ], function( Box2D, I
 		var jointDef = new Box2D.RevoluteJointDef();
 		jointDef.Initialize( shipBody, this.body, shipBody.GetWorldCenter() );
 		
-		world.CreateJoint( jointDef );
+		this.joint = world.CreateJoint( jointDef );
 	}
 	
 	Propulsor.prototype.applyForce = function()
@@ -62,6 +62,12 @@ define( [ "Box2D", "Managers/InputManager", "libs/Vectors" ], function( Box2D, I
 	{
 		console.log( "Propulsor " + ( isActive ? "activated" : "deactivated" ) );
 		this.isActive = isActive;
+	}
+	
+	Propulsor.prototype.destroy = function( world )
+	{
+		world.DestroyJoint( this.joint );
+		world.DestroyBody( this.body );
 	}
 	
 	Propulsor.prototype.constructor = Propulsor;

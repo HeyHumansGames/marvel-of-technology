@@ -13,6 +13,7 @@ define( function( require )
 		B2D.PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
 		B2D.CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 		B2D.RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef;
+		B2D.DistanceJointDef = Box2D.Dynamics.Joints.b2DistanceJointDef;
 		B2D.ContactListener  = Box2D.Dynamics.b2ContactListener;
 		
 		B2D.scale = 30;

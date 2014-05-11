@@ -1,6 +1,6 @@
 define( [ "Box2D", "Managers/InputManager", "Game/Module" ], function( Box2D, InputsManager, Module )
 {
-	var propulsorForce = 10;
+	var propulsorForce = 1;
 	var Ship = function( world, position, socket ) 
 	{
 		//add contact listener
@@ -76,17 +76,21 @@ define( [ "Box2D", "Managers/InputManager", "Game/Module" ], function( Box2D, In
 				module.addPropulsor( id, propulsorForce, world );
 			else
 			{
-				var modulePos = module.body.GetPosition();
-				var newPos = new Box2D.Vec2( modulePos.x - modulePos.scale, modulePos.y );
-				module = that.addModule( world, newPos, true );
+				// var modulePos = module.body.GetPosition();
+				// var newPos = new Box2D.Vec2( modulePos.x - module.scale, modulePos.y );
+				// module = that.addModule( world, newPos, true );
 				
-				//add new propulsor here 
-				module.addPropulsor( id, propulsorForce, world );
+				// //add new propulsor here 
+				// module.addPropulsor( id, propulsorForce, world );
 			}
 		});
 		
 		socket.on( "activatePropulsor", function( data ) {
 			that.activatePropulsor( data.id, data.activate );
+		});
+		
+		socket.on( "playerDisconnected", function( id ) {
+			that.destroyPropulsor( id, world );
 		});
 	}
 	
@@ -103,6 +107,25 @@ define( [ "Box2D", "Managers/InputManager", "Game/Module" ], function( Box2D, In
 				{
 					console.log( "Propulsor " + j );
 					propulsor.activate( isActive );
+					found = true;
+				}
+			}
+		}
+	}
+	
+	Ship.prototype.destroyPropulsor = function( id, world )
+	{
+		var found = false;
+		for ( var i = 0; !found && i < this.modules.length; i++ )
+		{
+			var module = this.modules[i];
+			for ( var j = 0; !found && j < module.propulsors.length; j++ )
+			{
+				var propulsor = module.propulsors[j];
+				if ( propulsor.id == id )
+				{
+					propulsor.destroy( world );
+					module.propulsors.splice( j, 1 );
 					found = true;
 				}
 			}
@@ -149,8 +172,8 @@ define( [ "Box2D", "Managers/InputManager", "Game/Module" ], function( Box2D, In
 		if ( isLink )
 		{
 			var prevModuleBody = this.modules[ this.modules.length - 1 ].body;
-			var jointDef = new Box2D.RevoluteJointDef();
-			jointDef.Initialize( prevModuleBody, newModule.body, prevModuleBody.GetWorldCenter() );
+			var jointDef = new Box2D.DistanceJointDef();
+			jointDef.Initialize( newModule.body, prevModuleBody, newModule.body.GetWorldCenter(), prevModuleBody.GetWorldCenter() );
 			
 			world.CreateJoint( jointDef );
 		}

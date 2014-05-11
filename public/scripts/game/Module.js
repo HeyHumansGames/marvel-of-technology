@@ -41,6 +41,29 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 		// entity.points == [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y:2}]
 		var scale = 4;
 		var points = [
+			{ first : new Box2D.Vec2( 0, 0 ), second : new Box2D.Vec2( scale, 0 ) },
+			{ first : new Box2D.Vec2( scale, scale ), second : new Box2D.Vec2( 0, scale ) },
+			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( scale * -0.5, scale * 0.5 ) },
+			{ first : new Box2D.Vec2( scale, 0 ), second : new Box2D.Vec2( scale * 1.5, scale * 0.5 ) },
+			{ first : new Box2D.Vec2( scale * 1.5, scale * 0.5 ), second : new Box2D.Vec2( scale, scale ) },
+			{ first : new Box2D.Vec2( scale * -0.5, scale * 0.5 ), second : new Box2D.Vec2( 0, 0 ) },
+			{ first : new Box2D.Vec2( 0, 0 ), second : new Box2D.Vec2( scale * 0.3, 0 ) },
+			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( -scale * 0.3, scale ) },
+			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( scale * 0.2, scale ) }
+		];
+		
+		this.scale = scale;
+		
+		this.jointPoints = new Array();
+		for ( var i = 0; i < points.length; i++ )
+		{
+			var first  = points[i].first, 
+				second = points[i].second;
+		
+			this.jointPoints.push( new Box2D.Vec2( 0.5 * ( first.x + second.x ), 0.5 * ( first.y + second.y ) ) );
+		}
+		
+		var shape = [
 			new Box2D.Vec2( 0, 0 ),
 			new Box2D.Vec2( scale, 0 ),
 			new Box2D.Vec2( scale * 1.5, scale * 0.5 ),
@@ -49,20 +72,12 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 			new Box2D.Vec2( scale * -0.5, scale * 0.5 )
 		];
 		
-		this.scale = scale;
-		
-		this.jointPoints = new Array();
-		for ( var i = 0; i < points.length - 1; i++ )
-			this.jointPoints.push( new Box2D.Vec2( 0.5 * ( points[i+1].x + points[i].x ), 0.5 * ( points[i+1].y + points[i].y ) ) );
-		//add last joint to loop
-		this.jointPoints.push( new Box2D.Vec2( 0.5 * ( points[ points.length - 1 ].x + points[0].x ), 0.5 * ( points[ points.length - 1 ].y, points[0].y ) ) );
-		
-		fixDef.shape.SetAsArray( points, points.length );
+		fixDef.shape.SetAsArray( shape, shape.length );	
 	}	
 	
 	Module.prototype.addPropulsor = function( id, force, world )
 	{
-		var angles = [ 0, 45, 135, 180, 225, 315 ];
+		var angles = [ 0, 180, 225, 45, 135, 315, 0, 225, 180 ];
 		var index = this.propulsors.length;
 		
 		var pos = { x : this.body.GetPosition().x + this.jointPoints[index].x, y : this.body.GetPosition().y + this.jointPoints[index].y };
@@ -71,7 +86,7 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 	
 	Module.prototype.isFull = function()
 	{
-		return this.propulsors.length === 4;
+		return this.propulsors.length === 9;
 	}
 	
 	Module.prototype.constructor = Module;
