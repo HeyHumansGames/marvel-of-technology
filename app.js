@@ -20,7 +20,7 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('pushStartReactor', function ( playerId ) {
     //	console.log(data);
-    	socket.emit('Allumage du reacteur du joueur X', { my: 'data' });
+    	socket.emit('Allumage du reacteur', { my: 'data' });
 		
 		if ( typeof( gameSocket ) !== "undefined" )
 			gameSocket.emit( "activatePropulsor", { id : playerId, activate : true } );
@@ -28,7 +28,7 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('unpushStartReactor', function ( playerId ) {
     //	console.log(data);
-    	socket.emit("Fin d'allumage du reacteur du joueur X", { my: 'data' });
+    	socket.emit("Fin d'allumage du reacteur", { my: 'data' });
 		
 		if ( typeof( gameSocket ) !== "undefined" )
 			gameSocket.emit( "activatePropulsor", { id : playerId, activate : false } );
