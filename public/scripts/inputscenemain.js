@@ -38,6 +38,14 @@ require (["socket_io","Managers/InputManager", "HandJS" ],function(io, InputMana
 		this.loop( this.gameLoop );
 	};
 
+	Controller.prototype.update = function( deltaTime ){
+
+	}
+
+	Controller.prototype.render = function( ctx ){
+
+	};
+
 	Controller.prototype.loop = function( gameLoop ) {
         var _cb = function() 
 		{ 
@@ -127,7 +135,7 @@ require (["socket_io","Managers/InputManager", "HandJS" ],function(io, InputMana
 		    ctx.strokeStyle="#ffcf00";
 		    ctx.stroke();
 
-		LoadButtons(img);	
+		LoadButtons(img);
 	}
     img2.src = '/assets/img/interface/fond.png';
 
@@ -181,20 +189,22 @@ require (["socket_io","Managers/InputManager", "HandJS" ],function(io, InputMana
    		img.src = '/assets/img/interface/boutonhold.png';
 	}
 
+	function LoadLeds(nbh,nbv){
+		var c = document.getElementById("interface");
+		var ctx = c.getContext("2d");
+
+		var led = new Image();
+
+		led.onload = function() {
+			ctx.drawImage(led, c.width/2+120*(nbh-1), c.width*0.1+120*nbv);
+		}
+		var randled = Math.floor(Math.random() * 6)+1;
+		led.src = '/assets/img/interface/led'+ randled +'.png';
+	}
+
 	return Controller;
 });
 
 
 
-function LoadLeds(nbh,nbv){
-	var c = document.getElementById("interface");
-	var ctx = c.getContext("2d");
 
-	var led = new Image();
-
-	led.onload = function() {
-		ctx.drawImage(led, c.width/2+120*(nbh-1), c.width*0.1+120*nbv);
-	}
-	var randled = Math.floor(Math.random() * 6)+1;
-	led.src = '/assets/img/interface/led'+ randled +'.png';
-}
