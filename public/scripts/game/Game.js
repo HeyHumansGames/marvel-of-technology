@@ -7,11 +7,13 @@ define( [
 		"Menus/LoadingMenu", 
 		"Menus/MainLevel", 
 		"Menus/IntroductionScene",
+		"Menus/MainLevel2",
+		"Menus/GameOverMenu",
 		"game/Timer",
 		"socket_io",
 		"libs/stats.min"
 	], 
-	function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene, Timer, socket_io )
+	function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene, MainLevel2, GameOverMenu, Timer, socket_io )
 {
 	var requestAnimationFrame = window.requestAnimationFrame
       || window.webkitRequestAnimationFrame
@@ -41,6 +43,8 @@ define( [
 		var path = {img:"assets/img/", sound:"assets/sounds/"};
 		new AssetManager(path);
 
+		this.life = 100;
+
 		//launch theme
 		var theme = AssetManager.instance.sounds[ "theme" ];
 		theme.loop = true;
@@ -57,6 +61,8 @@ define( [
 		this.menus.push( new TitleMenu( this.context ) );
 		this.menus.push( new IntroductionScene( this.context ) );
 		this.menus.push( new MainLevel( this.context, this.socket ) );
+		this.menus.push( new MainLevel2( this.context, this.socket ) );
+		this.menus.push( new GameOverMenu( this.context, this.socket ) );
 		
 		this.isFinishedLoading = false; //trigger loading change just once D:
 		this.currentMenu = 0;
@@ -83,7 +89,10 @@ define( [
 			this.currentMenu = 1;
 		}	
 		
-		this.menus[ this.currentMenu ].update( deltaTime );
+		if (this.life < 0)
+			this.currentMenu = this.menus.length-1
+		else
+			this.menus[ this.currentMenu ].update( deltaTime );
 	
 		InputManager.instance.update( deltaTime );
 	}

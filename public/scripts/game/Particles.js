@@ -40,7 +40,7 @@ define( [  ], function( ) {
     vel: {x: 0, y: 0},
 
     // Particle Properties
-    positionRandom: { x: 12, y: 12 },
+    positionRandom: { x: 16, y: 16 },
     sizeRandom: 8,
     speed: 4,
     speedRandom: 10,

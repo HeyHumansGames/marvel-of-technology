@@ -24,7 +24,7 @@ define( function()
 		this.isSkipImages  = false;
 		
 		this.imageDirectories = [
-			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png", "MoT_Trials.png", "Fond_Stage.png" ] },
+			{ name : "decor/", files : [ "FondEtoiles720.png", "level1.png", "MoT_Trials.png", "Fond_Stage.png", "MoT_Trials2.png" ] },
 			{ name : "", files : [ "space-monkey.png", "captain.png" ] }, 
 			{ name : "ship/", files : [ "ReacteurMoT.png", "VaisseauMoTShaded.png" ] }
 		];
