@@ -1,18 +1,22 @@
-define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "Game/Particles" ], function( Box2D, InputsManager, Propulsor, ParticleEmitter )
+define( [ "Box2D", "Managers/InputManager", "Game/Module", "Game/Particles" ], function( Box2D, InputsManager, Module, ParticleEmitter )
 {
-	var box2DScale = 30;
+	var propulsorForce = 10;
 	var Ship = function( world, position, socket ) 
 	{
-		//add contact listener
-		var listener = new Box2D.ContactListener;
-		listener.BeginContact = this.shipCollision;
+		// //add contact listener
+		// var listener = new Box2D.ContactListener;
+		// listener.BeginContact = this.shipCollision;
 		
-		world.SetContactListener( listener );
+		// world.SetContactListener( listener );
 		
-		this.createShipBody( world, position );
-		this.addPropulsors( world, position, socket );
+		// this.createShipBody( world, position );
+		// this.addPropulsors( world, position, socket );
 
     this.particles = [];
+		this.modules = new Array();
+		
+		this.addModule( world, position );
+		this.initSocket( world, socket );
 	}
 	
 	Ship.prototype.update = function( deltaTime )
@@ -39,8 +43,8 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "Game/Particles" ]
 				// this.die();
 		// }
 		
-		for ( var i = 0; i < this.propulsors.length; i++ )
-			this.propulsors[i].update( deltaTime );
+		for ( var i = 0; i < this.modules.length; i++ )
+			this.modules[i].update( deltaTime );
 	}
 	
 	Ship.prototype.render = function( context )
@@ -64,84 +68,75 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "Game/Particles" ]
 		// var position = this.body.GetPosition();
 		// context.save();	
 	}
-	
-	Ship.prototype.createShipBody = function( world, position )
+		
+	Ship.prototype.initSocket = function( world, socket )
 	{
-		var bodyDef  = new Box2D.BodyDef();
-		bodyDef.type = Box2D.Body.b2_dynamicBody;
-
-		bodyDef.position.Set( position.x, position.y );
-		
-		var fixDef   = new Box2D.FixtureDef();
-		fixDef.shape = new Box2D.PolygonShape();
-		
-		this.defineShipShape( fixDef );
-		
-		this.body = world.CreateBody( bodyDef );
-		this.body.CreateFixture( fixDef );
-		
-		this.body.tag = "Ship";
-	}
-	
-	Ship.prototype.defineShipShape = function( fixDef )
-	{
-		// entity.points == [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y:2}]
-		var scale = 4;
-		var points = [
-			new Box2D.Vec2( 0, 0 ),
-			new Box2D.Vec2( scale, 0 ),
-			new Box2D.Vec2( scale * 1.5, scale * 0.5 ),
-			new Box2D.Vec2( scale, scale ),
-			new Box2D.Vec2( 0, scale ),
-			new Box2D.Vec2( scale * -0.5, scale * 0.5 )
-		];
-		
-		this.jointPoints = new Array();
-		for ( var i = 0; i < points.length - 1; i++ )
-			this.jointPoints.push( new Box2D.Vec2( 0.5 * ( points[i+1].x + points[i].x ), 0.5 * ( points[i+1].y + points[i].y ) ) );
-		//add last joint to loop
-		this.jointPoints.push( new Box2D.Vec2( 0.5 * ( points[ points.length - 1 ].x + points[0].x ), 0.5 * ( points[ points.length - 1 ].y, points[0].y ) ) );
-		
-		fixDef.shape.SetAsArray( points, points.length );
-	}	
-	
-	Ship.prototype.addPropulsors = function( world, position, socket )
-	{
-		this.propulsors = new Array();
-		
 		var that = this;
 		socket.on( "addPropulsor", function( id ) {
 			
 			console.log( "new propulsor" );
-			var angles = [ 0, 45, 135, 180, 225, 315 ]
-		//	for ( var i = 0; i < this.jointPoints.length/2+1; i++ )
+			var module = that.modules[ that.modules.length - 1 ];
+			if ( !module.isFull() ) 
+				module.addPropulsor( id, propulsorForce, world );
+			else
 			{
-				var i = 4;
-				var pos = { x : that.body.GetPosition().x + that.jointPoints[i].x, y : that.body.GetPosition().y + that.jointPoints[i].y };
-				that.propulsors.push( new Propulsor( id, 60, pos, angles[i], that.body, world ) );
+				// var modulePos = module.body.GetPosition();
+				// var newPos = new Box2D.Vec2( modulePos.x - module.scale, modulePos.y );
+				// module = that.addModule( world, newPos, true );
+				
+				// //add new propulsor here 
+				// module.addPropulsor( id, propulsorForce, world );
 			}
 		});
 		
 		socket.on( "activatePropulsor", function( data ) {
 			that.activatePropulsor( data.id, data.activate );
 		});
+		
+		socket.on( "playerDisconnected", function( id ) {
+			that.destroyPropulsor( id, world );
+		});
 	}
 	
 	Ship.prototype.activatePropulsor = function( id, isActive )
 	{
 		var found = false;
-		for ( var i = 0; !found && i < this.propulsors.length; i++ )
+		for ( var i = 0; !found && i < this.modules.length; i++ )
 		{
-			var propulsor = this.propulsors[i];
-			if ( propulsor.id = id )
+			var module = this.modules[i];
+			for ( var j = 0; !found && j < module.propulsors.length; j++ )
 			{
-				propulsor.activate( isActive );
-				found = true;
+				var propulsor = module.propulsors[j];
+				if ( propulsor.id == id )
+				{
+					console.log( "Propulsor " + j );
+					propulsor.activate( isActive );
+					found = true;
+				}
 			}
 		}
 	}
 	
-	Ship.prototype.addModule = function(slot, moduleType)
+	Ship.prototype.destroyPropulsor = function( id, world )
+	{
+		var found = false;
+		for ( var i = 0; !found && i < this.modules.length; i++ )
+		{
+			var module = this.modules[i];
+			for ( var j = 0; !found && j < module.propulsors.length; j++ )
+			{
+				var propulsor = module.propulsors[j];
+				if ( propulsor.id == id )
+				{
+					propulsor.destroy( world );
+					module.propulsors.splice( j, 1 );
+					found = true;
+				}
+			}
+		}
+	}
+	
+	/*Ship.prototype.addModule = function(slot, moduleType)
 	{
 		var position = this.modulesSlots[slot];
 		switch(moduleType)
@@ -170,42 +165,24 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "Game/Particles" ]
 
 		this.nbModules++;
 	}
+	*/
 	
-	Ship.prototype.shipCollision = function( contact )
+	Ship.prototype.addModule = function( world, position, isLink )
 	{
-		var bodies = [ contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody() ];
-		var shipIndex = ( bodies[0].tag === "ship" ) ? 0 : -1;
-		shipIndex = ( bodies[1].tag === "ship" ) ? 1 : shipIndex;
+		var newModule = new Module( world, position );
+		this.modules.push( newModule );
 		
-		if ( shipIndex === -1 )
-			return;
-		
-		if ( bodies[0].tag === bodies[1].tag )
-			return;
-
-		// var dust = false;
-		// if ( bodies[0].tag === "dust") {
-		// 	dust = bodies[0];
-		// } else if ( bodies[1].tag === "dust") {
-		// 	dust = bodies[1];
-		// }
-		// if (dust) {
-		// 	var p = dust.GetPosition();
-		// 	if (this.particles.length < 5)
-		// 		this.particles.push(new ParticleEmitter(p.x * 30 - game.screen.x, p.y * 30 - game.screen.y));
-		// }
-		
-		var module = bodies[shipIndex].module;
-		if(bodies[1 - shipIndex] === null || bodies[1 - shipIndex] === undefined)
-			var obstacle = bodies[shipIndex + 1];
-		else
-			var obstacle = bodies[1 - shipIndex];
-
-		//module hit print type
-		if ( module instanceof Collider && obstacle.tag !== "wind" && obstacle.tag !== "collectible")
+		//if link joint it to previous module
+		if ( isLink )
 		{
-			module.hp = Math.max( 0, module.hp - 0.5 );
+			var prevModuleBody = this.modules[ this.modules.length - 1 ].body;
+			var jointDef = new Box2D.DistanceJointDef();
+			jointDef.Initialize( newModule.body, prevModuleBody, newModule.body.GetWorldCenter(), prevModuleBody.GetWorldCenter() );
+			
+			world.CreateJoint( jointDef );
 		}
+		
+		return newModule;
 	}
 	
 	Ship.prototype.die = function()

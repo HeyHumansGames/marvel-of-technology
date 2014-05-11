@@ -5,7 +5,7 @@ module.exports = function(app)
 		res.render( 'index.html' );
     });
 
-    app.get('/inputscene', function(req, res) {     
+    app.get('/play', function(req, res) {     
 		res.render( 'inputscene.html' );
     });
 };

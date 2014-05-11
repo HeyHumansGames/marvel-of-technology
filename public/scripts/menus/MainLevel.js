@@ -18,8 +18,15 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 	
   	this.initBox2DWorld( context );
   	
+
   	this.ship = new Ship( this.world, { x : ( 80 ) / box2DScale, y : ( 1100 ) / box2DScale }, socket );
-  	
+  	this.ship.modules[0].body.parent = this;
+    
+    //add contact listener
+    var listener = new Box2D.ContactListener;
+    listener.BeginContact = this.shipCollision;
+    this.world.SetContactListener( listener );
+
   	//listen when game screen has changed such that collision boxes are not constantly moved D:
   	this.isMove = false;
   	this.step = { x : 0, y : 0 };
@@ -80,7 +87,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 	
   	this.ship.update( deltaTime );
 
-    var pS = this.ship.body.GetPosition();
+    var pS = this.ship.modules[0].body.GetPosition();
 
     game.screen.x = (pS.x * 30) - (this.size.x >> 1);
     game.screen.y = (pS.y * 30) - (this.size.y >> 1);
@@ -99,7 +106,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     context.fillStyle = "#000";
     context.fillRect( 0, 0, this.size.x, this.size.y );
 
-    var shipPos = this.ship.body.GetPosition();
+    var shipPos = this.ship.modules[0].body.GetPosition();
     context.drawImage( AssetManager.instance.images[ "MoT_Trials" ], game.screen.x, game.screen.y, this.size.x, this.size.y, 0, 0, this.size.x, this.size.y);
 
     // decX = shipPos.x >> 5;
@@ -154,9 +161,46 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     return ostart + (ostop - ostart) * ((number - istart) / (istop - istart));
   };
   
+    MainLevel.prototype.shipCollision = function( contact )
+  {
+    var bodies = [ contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody() ];
+    var shipIndex = ( bodies[0].tag === "Ship" ) ? 0 : -1;
+    shipIndex = ( bodies[1].tag === "Ship" ) ? 1 : shipIndex;
+    
+    if ( shipIndex === -1 )
+      return;
+    
+    if ( bodies[0].tag === bodies[1].tag )
+      return;
+
+    var dust = false;
+    if ( bodies[0].tag === "dust") {
+      dust = bodies[0];
+    } else if ( bodies[1].tag === "dust") {
+      dust = bodies[1];
+    }
+    if (dust) {
+      var p = dust.GetPosition();
+      if (bodies[shipIndex].parent.particles.length < 5)
+        bodies[shipIndex].parent.particles.push(new ParticleEmitter((p.x * 30) - game.screen.x, (p.y * 30) - game.screen.y));
+    }
+    
+    // var module = bodies[shipIndex].module;
+    // if(bodies[1 - shipIndex] === null || bodies[1 - shipIndex] === undefined)
+    //  var obstacle = bodies[shipIndex + 1];
+    // else
+    //  var obstacle = bodies[1 - shipIndex];
+
+    //module hit print type
+    // if ( module instanceof Collider && obstacle.tag !== "wind" && obstacle.tag !== "collectible")
+    // {
+    //  module.hp = Math.max( 0, module.hp - 0.5 );
+    // }
+  }
+
   MainLevel.prototype.initBox2DWorld = function( context )
   {
-	var gravity = new Box2D.Vec2( 0, 2 ); 
+	var gravity = new Box2D.Vec2( 0, 0 ); 
 	this.world  = new Box2D.World( gravity, true);
 	
 	this.setupDebugDraw( context );
@@ -183,8 +227,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 	var fixDef  = new Box2D.FixtureDef();
 	var bodyDef = new Box2D.BodyDef();
 	
-	fixDef.density = 1.0;
-	fixDef.friction = 0.5;
+	fixDef.density = 10;
+	fixDef.friction = 0;
 	fixDef.restitution = 0.0;
 	
 	//everything will be a static body with box size (so we can define this just once)
@@ -200,17 +244,18 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 			if ( collision === 0 )
 				continue;
 			
-      // if (collision === 25) {
-      //   fixDef.isSensor = true;
-      // }
+      if (collision === 25) {
+        fixDef.isSensor = true;
+      } else
+        fixDef.isSensor = false;
 
 		  //	center of collision box
 			bodyDef.position.Set( (2*j + 1) * boxSize, (2*i + 1) * boxSize );
 			
 			var collisionBody = this.world.CreateBody( bodyDef );
-      // if (collision === 25) {
-      //   collisionBody.tag = "dust";
-      // }
+      if (collision === 25) {
+        collisionBody.tag = "dust";
+      }
 
 			collisionBody.CreateFixture( fixDef );
 			

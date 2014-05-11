@@ -20,7 +20,7 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('pushStartReactor', function ( playerId ) {
     //	console.log(data);
-    	socket.emit('Allumage du reacteur du joueur X', { my: 'data' });
+    	socket.emit('Allumage du reacteur', { my: 'data' });
 		
 		if ( typeof( gameSocket ) !== "undefined" )
 			gameSocket.emit( "activatePropulsor", { id : playerId, activate : true } );
@@ -28,14 +28,14 @@ io.sockets.on('connection', function(socket)
 	
 	socket.on('unpushStartReactor', function ( playerId ) {
     //	console.log(data);
-    	socket.emit("Fin d'allumage du reacteur du joueur X", { my: 'data' });
+    	socket.emit("Fin d'allumage du reacteur", { my: 'data' });
 		
 		if ( typeof( gameSocket ) !== "undefined" )
 			gameSocket.emit( "activatePropulsor", { id : playerId, activate : false } );
 	});
 	
 	socket.on("remoteConnect", function() {
-		var playerId = addPlayer();
+		var playerId = addPlayer( socket );
 		
 		console.log( "remote connection" );
 		socket.emit( "connectedToServer", playerId );
@@ -47,18 +47,37 @@ io.sockets.on('connection', function(socket)
 	socket.on("gameConnect", function() {
 		gameSocket = socket;
 		for ( var i = 0; i < players.length; i++ )
-			gameSocket.emit( "addPropulsor", players[i] );
+			gameSocket.emit( "addPropulsor", players[i].id );
 		
 		console.log( "game connection" );
 	});
+	
+	socket.on( "disconnect", function() { 
+		console.log( "disconnected" );
+		var player = findSocket( socket );
+		if ( player !== -1 && typeof( gameSocket ) !== "undefined" )
+		{
+			gameSocket.emit( "playerDisconnected", players[player].id );
+			players.splice( player, 1 );
+		}
+	});
 });
 
-function addPlayer()
+function addPlayer( playerSocket )
 {
-	var id = ( Math.random() * 9999999 ) | 0;
-	players.push( id );
+	var playerId = ( Math.random() * 9999999 ) | 0;
+	players.push( { id : playerId, socket : playerSocket } );
 	
-	return id;
+	return playerId;
+}
+
+function findSocket( playerSocket )
+{
+	for ( var i = 0; i < players.length; i++ )
+		if ( players[i].socket == playerSocket )
+			return i;
+	
+	return -1;
 }
 
 console.log( "SERVER ONLINE" );
