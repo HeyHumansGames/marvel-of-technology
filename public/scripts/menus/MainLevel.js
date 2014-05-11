@@ -21,7 +21,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 
   	this.ship = new Ship( this.world, { x : ( 80 ) / box2DScale, y : ( 1100 ) / box2DScale }, socket );
   	this.ship.modules[0].body.parent = this;
-    
+
     //add contact listener
     var listener = new Box2D.ContactListener;
     listener.BeginContact = this.shipCollision;
@@ -176,13 +176,15 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     var dust = false;
     if ( bodies[0].tag === "dust") {
       dust = bodies[0];
+      contact.SetEnabled(false);
     } else if ( bodies[1].tag === "dust") {
       dust = bodies[1];
+      contact.SetEnabled(false);
     }
     if (dust) {
       var p = dust.GetPosition();
       if (bodies[shipIndex].parent.particles.length < 5)
-        bodies[shipIndex].parent.particles.push(new ParticleEmitter((p.x * 30) - game.screen.x, (p.y * 30) - game.screen.y));
+        bodies[shipIndex].parent.particles.push(new ParticleEmitter((p.x * 30), (p.y * 30)));
     }
     
     // var module = bodies[shipIndex].module;
@@ -244,10 +246,10 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 			if ( collision === 0 )
 				continue;
 			
-      if (collision === 25) {
-        fixDef.isSensor = true;
-      } else
-        fixDef.isSensor = false;
+      // if (collision === 25) {
+      //   fixDef.isSensor = true;
+      // } else
+      //   fixDef.isSensor = false;
 
 		  //	center of collision box
 			bodyDef.position.Set( (2*j + 1) * boxSize, (2*i + 1) * boxSize );

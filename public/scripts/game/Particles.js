@@ -267,8 +267,8 @@ define( [  ], function( ) {
 
     render: function(context) {
       var halfSize = this.size.x >> 1;
-      var x = ~~this.pos.x + game.screen.x;
-      var y = ~~this.pos.y + game.screen.y;
+      var x = ~~this.pos.x - game.screen.x;
+      var y = ~~this.pos.y - game.screen.y;
       var radgrad = context.createRadialGradient( x + halfSize, y + halfSize, this.size.x, x + halfSize, y + halfSize, halfSize);
       radgrad.addColorStop( 0, this.drawColour);
       context.fillStyle = radgrad;
