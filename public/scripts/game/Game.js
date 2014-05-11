@@ -41,6 +41,11 @@ define( [
 		var path = {img:"assets/img/", sound:"assets/sounds/"};
 		new AssetManager(path);
 
+		//launch theme
+		var theme = AssetManager.instance.sounds[ "theme" ];
+		theme.loop = true;
+		theme.play();
+		
 		// Pools, mainly for particles
 		this.pools = {};
 	

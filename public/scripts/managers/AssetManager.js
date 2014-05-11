@@ -30,7 +30,7 @@ define( function()
 		];
 
 		this.soundDirectories = [ 
-						{ name : "", files : ["ingame.mp3","editor.mp3"] }
+						{ name : "", files : ["theme.mp3"] }
 		];
 
 

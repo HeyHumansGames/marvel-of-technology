@@ -43,12 +43,12 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 		var points = [
 			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( -scale * 0.3, scale ) },
 			{ first : new Box2D.Vec2( scale, scale ), second : new Box2D.Vec2( 0, scale ) },
-			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( scale * -0.5, scale * 0.5 ) },
+			{ first : new Box2D.Vec2( 0, 0 ), second : new Box2D.Vec2( scale, 0 ) },
 			{ first : new Box2D.Vec2( scale, 0 ), second : new Box2D.Vec2( scale * 1.5, scale * 0.5 ) },
 			{ first : new Box2D.Vec2( scale * 1.5, scale * 0.5 ), second : new Box2D.Vec2( scale, scale ) },
 			{ first : new Box2D.Vec2( scale * -0.5, scale * 0.5 ), second : new Box2D.Vec2( 0, 0 ) },
 			{ first : new Box2D.Vec2( 0, 0 ), second : new Box2D.Vec2( scale * 0.3, 0 ) },
-			{ first : new Box2D.Vec2( 0, 0 ), second : new Box2D.Vec2( scale, 0 ) },
+			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( scale * -0.5, scale * 0.5 ) },
 			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( scale * 0.2, scale ) }
 		];
 		
@@ -77,7 +77,7 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 	
 	Module.prototype.addPropulsor = function( id, force, world )
 	{
-		var angles = [ 225, 180, 225, 45, 135, 315, 0, 0, 180 ];
+		var angles = [ 225, 180, 0, 45, 135, 315, 225, 0, 180 ];
 		var index = this.propulsors.length;
 		
 		var pos = { x : this.body.GetPosition().x + this.jointPoints[index].x, y : this.body.GetPosition().y + this.jointPoints[index].y };

@@ -14,9 +14,6 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     for (var i = 0; i < collision.length/220; i++) {
       this.collisionMap[i] = collision.slice(i*220, (i+1)*220);
     };
-
-  //  this.animOn = new Animation("ReacteurMoT", 20, 32, 0.1, [1, 2, 3, 4]);
-    
     
     this.particleId = -1;
     this.particles = [];
