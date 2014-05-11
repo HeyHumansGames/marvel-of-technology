@@ -15,8 +15,6 @@ io.sockets.on('connection', function(socket)
 {
 	console.log( "Someone connected to server, yay" );
 	
-	
-
 	socket.on('pushStartReactor', function (data) {
     	console.log(data);
     	socket.emit('Allumage du reacteur du joueur X', { my: 'data' });
