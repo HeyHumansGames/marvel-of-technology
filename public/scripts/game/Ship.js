@@ -47,7 +47,7 @@ define( [ "Box2D", "Managers/InputManager", "Game/Module", "Game/Particles", "Ma
 			this.modules[i].update( deltaTime );
 	}
 	
-	Ship.prototype.render = function( context )
+	Ship.prototype.render = function( context, offset )
 	{
 		// context.strokeStyle = "#FFFFFF";
 		// context.fillStyle = "#000000";
@@ -75,8 +75,14 @@ define( [ "Box2D", "Managers/InputManager", "Game/Module", "Game/Particles", "Ma
 			
 			var shipImage = AssetManager.instance.images[ "VaisseauMoTShaded" ];
 			context.drawImage( shipImage, -0.25 * shipImage.width, -0.25 * shipImage.height );
-			
+		
+				
 		context.restore();
+		
+		//render all propulsors 
+		var propulsors = this.modules[0].propulsors;
+		for ( var i = 0; i < propulsors.length; i++ )
+			propulsors[i].render( context, offset );
 	}
 		
 	Ship.prototype.initSocket = function( world, socket )

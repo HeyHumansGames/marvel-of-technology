@@ -1,4 +1,4 @@
-define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Animation", "Game/Particles", "Box2D", "Game/Ship" ], function( AssetManager, InputManager, DialogManager, Animation, ParticleEmitter, Box2D, Ship ) {
+define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogManager", "Game/Particles", "Box2D", "Game/Ship" ], function( AssetManager, InputManager, DialogManager, ParticleEmitter, Box2D, Ship ) {
 
   var box2DScale = 30;	
   var MainLevel = function( context, socket )
@@ -15,8 +15,8 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
       this.collisionMap[i] = collision.slice(i*220, (i+1)*220);
     };
 
-    this.animOn = new Animation("ReacteurMoT", 20, 32, 0.1, [1, 2, 3, 4]);
-    this.animOff = new Animation("ReacteurMoT", 20, 32, 0.1, [0]);
+  //  this.animOn = new Animation("ReacteurMoT", 20, 32, 0.1, [1, 2, 3, 4]);
+    
     
     this.particles = [];
 	
@@ -71,7 +71,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
   	//   this.step.y = 100 * deltaTime;
   	// }
 	
-    this.animOn.update();
+   // this.animOn.update();
 
     if (game.shaking) {
       s = 8 - 8 * Math.pow(-deltaTime / 4, 2);
@@ -151,7 +151,6 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     //   };
     // };
 
-    // this.anim.render(context, game.screen.x + (this.size.x >> 1), game.screen.y + (this.size.y >> 1));
     //context.drawImage( AssetManager.instance.images[ "VaisseauMoTShaded" ], (shipPos.x * 30) - game.screen.x, (shipPos.y * 30) - game.screen.y);
 
 	

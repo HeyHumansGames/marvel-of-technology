@@ -1,4 +1,4 @@
-define( [ "Box2D", "Managers/InputManager", "libs/Vectors" ], function( Box2D, InputManager, Vectors )
+define( [ "Box2D", "Managers/InputManager", "libs/Vectors", "Game/Animation" ], function( Box2D, InputManager, Vectors, Animation )
 {
 	var box2DScale = 30;
 	var Propulsor = function( id, force, position, angle, shipBody, world )
@@ -9,21 +9,34 @@ define( [ "Box2D", "Managers/InputManager", "libs/Vectors" ], function( Box2D, I
 		this.createPropulsor( position, angle, shipBody, world );
 	
 		this.force = force;
+		
+		this.animOff = new Animation("ReacteurMoT", 20, 32, 0.1, [0]);
+		this.animOn = new Animation("ReacteurMoT", 20, 32, 0.1, [1, 2, 3, 4]);
+		
+		this.currentAnim = this.animOff;
 	}
 	
 	Propulsor.prototype.update = function( deltaTime )
 	{
 		if ( this.isActive )
 			this.applyForce();
+		
+		this.currentAnim = this.isActive ? this.animOn : this.animOff;
+		this.currentAnim.update();
 	}
 
-	Propulsor.prototype.render = function( context )
+	Propulsor.prototype.render = function( context, offset )
 	{
-		var position = this.body.GetPosition()
+		var pos   = this.body.GetPosition();
+		var angle = this.body.GetAngle();
+		
 		context.save();
-		context.translate(position.x*30,position.y*30);
-		context.rotate(this.body.GetAngle());
-		context.drawImage(window.Images.carot,0,0,729,1248, -15, -15, 30,30);
+		
+			context.translate( pos.x * Box2D.scale, pos.y * Box2D.scale );
+			context.rotate(this.body.GetAngle() - Math.PI );
+			
+			this.currentAnim.render( context, -this.currentAnim.width * 0.5, -this.currentAnim.height * 0.25 );
+		
 		context.restore();
 	}
 
