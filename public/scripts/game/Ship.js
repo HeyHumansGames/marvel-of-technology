@@ -1,7 +1,7 @@
-define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "socket_io" ], function( Box2D, InputsManager, Propulsor, io )
+define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D, InputsManager, Propulsor )
 {
 	var box2DScale = 30;
-	var Ship = function( world, position ) 
+	var Ship = function( world, position, socket ) 
 	{
 		//add contact listener
 		var listener = new Box2D.ContactListener;
@@ -10,10 +10,7 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "socket_io" ], fun
 		world.SetContactListener( listener );
 		
 		this.createShipBody( world, position );
-		this.addPropulsors( world, position );
-		
-		//create socket connection 
-		this.socket = io.connect( location.protocol + "//" + location.hostname + ":" + location.port );
+		this.addPropulsors( world, position, socket );
 	}
 	
 	Ship.prototype.update = function( deltaTime )
@@ -44,23 +41,26 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "socket_io" ], fun
 			this.propulsors[i].update( deltaTime );
 	}
 	
-	Ship.prototype.render = function(context)
+	Ship.prototype.render = function( context )
 	{
-		context.strokeStyle = "#FFFFFF";
-		context.fillStyle = "#000000";
-		context.font = "Bold 30px MenuFont";
-	    context.fillText("Score : "+this.score+"", 720, 50);
-	    context.strokeText("Score : "+this.score+"", 720, 50);
+		// context.strokeStyle = "#FFFFFF";
+		// context.fillStyle = "#000000";
+		// context.font = "Bold 30px MenuFont";
+	    // context.fillText("Score : "+this.score+"", 720, 50);
+	    // context.strokeText("Score : "+this.score+"", 720, 50);
 
-	    context.drawImage(window.Images.collectibles, 0,0,466,1278, 730, 60, 40,40);
-	    context.fillText("x "+this.collectibles+"", 800, 100);
-	    context.strokeText("x "+this.collectibles+"", 800, 100);
+	    // context.drawImage(window.Images.collectibles, 0,0,466,1278, 730, 60, 40,40);
+	    // context.fillText("x "+this.collectibles+"", 800, 100);
+	    // context.strokeText("x "+this.collectibles+"", 800, 100);
 
-	    for(var key in this.modulesSlots){
-	    	if(this.modulesSlots[key] instanceof Collider){
-	    		this.modulesSlots[key].render(context);
-	    	}
-	    }
+	    // for(var key in this.modulesSlots){
+	    	// if(this.modulesSlots[key] instanceof Collider){
+	    		// this.modulesSlots[key].render(context);
+	    	// }
+	    // }
+		
+		// var position = this.body.GetPosition();
+		// context.save();	
 	}
 	
 	Ship.prototype.createShipBody = function( world, position )
@@ -103,16 +103,26 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "socket_io" ], fun
 		fixDef.shape.SetAsArray( points, points.length );
 	}	
 	
-	Ship.prototype.addPropulsors = function( world, position )
+	Ship.prototype.addPropulsors = function( world, position, socket )
 	{
 		this.propulsors = new Array();
-		var angles = [ 0, 45, 135, 180, 225, 315 ]
-	//	for ( var i = 0; i < this.jointPoints.length/2+1; i++ )
-		{
-			var i = 4;
-			var pos = { x : this.body.GetPosition().x + this.jointPoints[i].x, y : this.body.GetPosition().y + this.jointPoints[i].y };
-			this.propulsors.push( new Propulsor( Math.random * 10, 60, pos, angles[i], this.body, world ) );
-		}
+		
+		var that = this;
+		socket.on( "addPropulsor", function( id ) {
+			
+			console.log( "new propulsor" );
+			var angles = [ 0, 45, 135, 180, 225, 315 ]
+		//	for ( var i = 0; i < this.jointPoints.length/2+1; i++ )
+			{
+				var i = 4;
+				var pos = { x : that.body.GetPosition().x + that.jointPoints[i].x, y : that.body.GetPosition().y + that.jointPoints[i].y };
+				that.propulsors.push( new Propulsor( id, 60, pos, angles[i], that.body, world ) );
+			}
+		});
+		
+		socket.on( "activatePropulsor", function( data ) {
+			that.activatePropulsor( data.id, data.activate );
+		});
 	}
 	
 	Ship.prototype.activatePropulsor = function( id, isActive )
@@ -123,7 +133,7 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor", "socket_io" ], fun
 			var propulsor = this.propulsors[i];
 			if ( propulsor.id = id )
 			{
-				this.propulsor.activate( isActive );
+				propulsor.activate( isActive );
 				found = true;
 			}
 		}

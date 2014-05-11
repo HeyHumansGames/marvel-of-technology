@@ -13,7 +13,7 @@ define( [ "Box2D", "Managers/InputManager", "libs/Vectors" ], function( Box2D, I
 	
 	Propulsor.prototype.update = function( deltaTime )
 	{
-		if ( InputManager.instance.isPropulsorActive || this.isActive )
+		if ( this.isActive )
 			this.applyForce();
 	}
 
@@ -60,6 +60,7 @@ define( [ "Box2D", "Managers/InputManager", "libs/Vectors" ], function( Box2D, I
 	
 	Propulsor.prototype.activate = function( isActive )
 	{
+		console.log( "Propulsor " + ( isActive ? "activated" : "deactivated" ) );
 		this.isActive = isActive;
 	}
 	

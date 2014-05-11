@@ -8,9 +8,10 @@ define( [
 		"Menus/MainLevel", 
 		"Menus/IntroductionScene",
 		"game/Timer",
+		"socket_io",
 		"libs/stats.min"
 	], 
-	function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene, Timer )
+	function( Box2D, InputManager, AssetManager, DialogManager, TitleMenu, LoadingMenu, MainLevel, IntroductionScene, Timer, socket_io )
 {
 	var requestAnimationFrame = window.requestAnimationFrame
       || window.webkitRequestAnimationFrame
@@ -31,11 +32,17 @@ define( [
 	
 	var Game = function( canvasID )
 	{
+		//first create socket 
+		this.socket = io.connect( location.protocol + "//" + location.hostname + ":" + location.port );
+		
 		new Box2D();
 		new InputManager();
 		
 		var path = {img:"assets/img/", sound:"assets/sounds/"};
 		new AssetManager(path);
+
+		// Pools, mainly for particles
+		this.pools = {};
 	
 		this.canvas  = document.getElementById( canvasID );
 		this.context = this.canvas.getContext( "2d" );
@@ -44,7 +51,7 @@ define( [
 		this.menus.push( new LoadingMenu( this.context ) );
 		this.menus.push( new TitleMenu( this.context ) );
 		this.menus.push( new IntroductionScene( this.context ) );
-		this.menus.push( new MainLevel( this.context ) );
+		this.menus.push( new MainLevel( this.context, this.socket ) );
 		
 		this.isFinishedLoading = false; //trigger loading change just once D:
 		this.currentMenu = 0;
@@ -57,6 +64,9 @@ define( [
 		Game.instance = this;
 
 		this.loop( this.gameLoop );
+		
+		//emit socket connection 
+		this.initSocket();
 	}
 
 	Game.prototype.update = function( deltaTime )
@@ -88,7 +98,7 @@ define( [
 		};
 		
         _cb();
-    };
+   };
 	
 	Game.prototype.gameLoop = function()
 	{		
@@ -104,6 +114,29 @@ define( [
 		Game.instance.deltaTime = Date.now();
 		
 		stats.end();
+	};
+
+	Game.prototype.getFromPool = function( classId, x, y, settings ) {
+		var pool = this.pools[classId];
+		if( !pool || !pool.length ) { return null; }
+		
+		var instance = pool.pop();
+		instance.reset(x, y, settings);
+		return instance;
+	};
+
+	Game.prototype.putInPool = function( instance ) {
+		if( !this.pools[instance.classId] ) {
+			this.pools[instance.classId] = [instance];
+		}
+		else {
+			this.pools[instance.classId].push(instance);
+		}
+	};
+	
+	Game.prototype.initSocket = function()
+	{
+		this.socket.emit( "gameConnect" );
 	}
 	
 	Game.prototype.constructor = Game;
