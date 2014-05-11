@@ -16,7 +16,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
 	
   	this.initBox2DWorld( context );
   	
-  	this.ship = new Ship( this.world, { x : ( 0 ) / box2DScale * 0.5, y : ( 0 ) / box2DScale * 0.5 }, socket );
+  	this.ship = new Ship( this.world, { x : ( 500 ) / box2DScale, y : ( 200 ) / box2DScale }, socket );
   	
   	//listen when game screen has changed such that collision boxes are not constantly moved D:
   	this.isMove = false;
@@ -87,7 +87,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
     context.fillStyle = "#000";
     context.fillRect( 0, 0, this.size.x, this.size.y );
 
-	var shipPos = this.ship.body.GetPosition();
+	var shipPos = this.ship.modules[0].body.GetPosition();
     context.drawImage( AssetManager.instance.images[ "level1" ], shipPos.x, shipPos.y, this.size.x, this.size.y, 0, 0, this.size.x, this.size.y);
 
     decX = shipPos.x >> 5;
@@ -142,7 +142,7 @@ define( [ "Managers/AssetManager", "Managers/InputManager", "Managers/DialogMana
   
   MainLevel.prototype.initBox2DWorld = function( context )
   {
-	var gravity = new Box2D.Vec2( 0, 2 ); 
+	var gravity = new Box2D.Vec2( 0, 0 ); 
 	this.world  = new Box2D.World( gravity, true);
 	
 	this.setupDebugDraw( context );
