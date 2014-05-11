@@ -11,7 +11,7 @@ define( [  ], function( ) {
     this.pos.x = x;
     this.pos.y = y;
 
-    this._maxParticles = 10;
+    this._maxParticles = 6;
     if (settings.maxParticles)
       this._maxParticles = settings.maxParticles;
     this._particles = [];
@@ -19,7 +19,7 @@ define( [  ], function( ) {
 
     this._particleCount = 0;
 
-    this.startColour = [ 255, 255, 0, 0.6 ];
+    this.startColour = [ 236,202,109, 0.7 ];
     if (settings.startColour)
       this.startColour = settings.startColour.slice(0);
     
@@ -36,19 +36,19 @@ define( [  ], function( ) {
   ParticleEmitter.prototype = {
     classId: "ParticleEmitter",
 
-    size: { x: 6, y: 6 },
+    size: { x: 4, y: 4 },
     vel: {x: 0, y: 0},
 
     // Particle Properties
     positionRandom: { x: 12, y: 12 },
-    sizeRandom: 6,
-    speed: 10,
+    sizeRandom: 8,
+    speed: 4,
     speedRandom: 10,
     lifeSpan: 1,
     lifeSpanRandom: 0.7,
     angle: -90,
     angleRandom: 360,
-    endColour: [ 255, 255, 0, 0 ],
+    endColour: [ 236,202,109, 0 ],
 
     // EntityPool
     staticInstantiate: function( x, y, settings ) {
@@ -70,7 +70,7 @@ define( [  ], function( ) {
       this.vel.x = 0;
       this.vel.y = 0;
 
-      this._maxParticles = 10;
+      this._maxParticles = 6;
       if (settings.maxParticles)
         this._maxParticles = settings.maxParticles;
       this._particles = [];
@@ -78,7 +78,7 @@ define( [  ], function( ) {
 
       this._particleCount = 0;
 
-      this.startColour = [ 255, 255, 0, 1 ];
+      this.startColour = [ 236,202,109, 0.7 ];
       if (settings.startColour)
         this.startColour = settings.startColour.slice(0);
       

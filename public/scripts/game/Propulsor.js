@@ -37,6 +37,7 @@ define( [ "Box2D", "Managers/InputManager", "libs/Vectors" ], function( Box2D, I
 		var fixDef = new Box2D.FixtureDef();
 		fixDef.shape = new Box2D.PolygonShape();
 		fixDef.shape.SetAsBox( 16 / box2DScale, 16 / box2DScale );
+		fixDef.isSensor = true;
 		
 		this.body = world.CreateBody( bodyDef );
 		this.body.CreateFixture( fixDef );
