@@ -94,15 +94,15 @@ define( [ "Box2D", "Managers/InputManager", "Game/Module", "Game/Particles", "Ma
 			var module = that.modules[ that.modules.length - 1 ];
 			if ( !module.isFull() ) 
 				module.addPropulsor( id, propulsorForce, world );
-			else
-			{
+		//	else
+		//	{
 				// var modulePos = module.body.GetPosition();
 				// var newPos = new Box2D.Vec2( modulePos.x - module.scale, modulePos.y );
 				// module = that.addModule( world, newPos, true );
 				
 				// //add new propulsor here 
 				// module.addPropulsor( id, propulsorForce, world );
-			}
+		//	}
 		});
 		
 		socket.on( "activatePropulsor", function( data ) {

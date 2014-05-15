@@ -41,15 +41,15 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 		// entity.points == [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y:2}]
 		var scale = 2;
 		var points = [
-			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( -scale * 0.3, scale ) },
-			{ first : new Box2D.Vec2( scale, scale ), second : new Box2D.Vec2( 0, scale ) },
-			{ first : new Box2D.Vec2( 0, 0 ), second : new Box2D.Vec2( scale, 0 ) },
-			{ first : new Box2D.Vec2( scale, 0 ), second : new Box2D.Vec2( scale * 1.5, scale * 0.5 ) },
-			{ first : new Box2D.Vec2( scale * 1.5, scale * 0.5 ), second : new Box2D.Vec2( scale, scale ) },
-			{ first : new Box2D.Vec2( scale * -0.5, scale * 0.5 ), second : new Box2D.Vec2( 0, 0 ) },
-			{ first : new Box2D.Vec2( 0, 0 ), second : new Box2D.Vec2( scale * 0.3, 0 ) },
-			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( scale * -0.5, scale * 0.5 ) },
-			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( scale * 0.2, scale ) }
+			{ first : new Box2D.Vec2( 0, scale ), second : new Box2D.Vec2( -scale * 0.7, scale ) },
+			{ first : new Box2D.Vec2( scale * 1.22, scale * 1.05 ), second : new Box2D.Vec2( 0.22, scale * 1.05 ) },
+			{ first : new Box2D.Vec2( 0.22, -0.55 ), second : new Box2D.Vec2( scale * 1.22, -0.55 ) },
+			{ first : new Box2D.Vec2( scale * 1.25, -1.2 ), second : new Box2D.Vec2( scale * 2, scale * 0.25 ) },
+			{ first : new Box2D.Vec2( scale * 1.25, scale ), second : new Box2D.Vec2( scale * 2, scale ) },
+			{ first : new Box2D.Vec2( 0, -1.2 ), second : new Box2D.Vec2( -scale * 0.7, scale * 0.25 ) },
+			{ first : new Box2D.Vec2( -0.5, 0 ), second : new Box2D.Vec2( -scale, scale * 0.8 ) },
+			{ first : new Box2D.Vec2( scale, -0.1 ), second : new Box2D.Vec2( scale * 2, scale * 0.8 ) },
+			{ first : new Box2D.Vec2( scale, scale ), second : new Box2D.Vec2( scale * 2.5, scale ) }
 		];
 		
 		this.scale = scale;
@@ -77,16 +77,18 @@ define( [ "Box2D", "Managers/InputManager", "Game/Propulsor" ], function( Box2D,
 	
 	Module.prototype.addPropulsor = function( id, force, world )
 	{
-		var angles = [ 225, 180, 0, 45, 135, 315, 225, 0, 180 ];
+		var angles = [ 225, 180, 0, 35, 135, 315, 270, 90 ];
 		var index = this.propulsors.length;
 		
-		var pos = { x : this.body.GetPosition().x + this.jointPoints[index].x, y : this.body.GetPosition().y + this.jointPoints[index].y };
-		this.propulsors.push( new Propulsor( id, force, pos, angles[index], this.body, world ) ); 
+		var pos = ( !this.isFull() ) ? { x : this.body.GetPosition().x + this.jointPoints[index].x, y : this.body.GetPosition().y + this.jointPoints[index].y } : { x : this.body.GetPosition().x, y : this.body.GetPosition().y };
+		var angle = ( !this.isFull() ) ? angles[ index ] : ( (Math.random * 360) | 0 );
+	
+		this.propulsors.push( new Propulsor( id, force, pos, angle, this.body, world ) ); 
 	}
 	
 	Module.prototype.isFull = function()
 	{
-		return this.propulsors.length === 9;
+		return this.propulsors.length === 7;
 	}
 	
 	Module.prototype.constructor = Module;
