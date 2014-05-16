@@ -15,6 +15,8 @@ Credits:
 
 Special thanks to Leïla Chihab ([@ebullibrain](https://twitter.com/ebullibrain)) for the 2 space monkeys illustrations and Lucien Jély ([@JelyLucien](https://twitter.com/JelyLucien)) for the music tune.
 
+![Imgur](http://i.imgur.com/g4xL70Z.png)
+
 ## How to launch?
 
 1. Install NodeJs and npm
